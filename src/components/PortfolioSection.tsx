@@ -5,32 +5,32 @@ const projects = [
   {
     title: "Ocean Marina",
     category: "Branding & Web",
-    color: "from-blue-900/80 to-blue-600/40",
+    image: "/images/portfolio/ocean-marina.jpg",
   },
   {
     title: "Thara Thong",
     category: "Photography & Design",
-    color: "from-amber-900/80 to-amber-600/40",
+    image: "/images/portfolio/thara-thong.jpg",
   },
   {
     title: "Burger & Lobster",
     category: "Digital Marketing",
-    color: "from-red-900/80 to-red-600/40",
+    image: "/images/portfolio/burger-lobster.jpg",
   },
   {
     title: "Canolini",
     category: "Brand Identity",
-    color: "from-emerald-900/80 to-emerald-600/40",
+    image: "/images/portfolio/canolini.jpg",
   },
   {
     title: "ROSH",
     category: "UX/UI Design",
-    color: "from-purple-900/80 to-purple-600/40",
+    image: "/images/portfolio/rosh.jpg",
   },
   {
     title: "Aspira",
     category: "Web & SEO",
-    color: "from-cyan-900/80 to-cyan-600/40",
+    image: "/images/portfolio/aspira.jpg",
   },
 ];
 
@@ -66,14 +66,16 @@ const PortfolioSection = () => {
                 i === 0 || i === 3 ? "md:row-span-2 aspect-[3/4]" : "aspect-square"
               }`}
             >
-              {/* Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${project.color}`} />
-              <div className="absolute inset-0 bg-charcoal/40" />
-
-              {/* Pattern overlay */}
-              <div className="absolute inset-0 opacity-10"
-                style={{ backgroundImage: "radial-gradient(circle at 2px 2px, hsl(43 52% 54% / 0.3) 1px, transparent 0)", backgroundSize: "24px 24px" }}
+              {/* Project Image */}
+              <img
+                src={project.image}
+                alt={project.title}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
+
+              {/* Dark overlay */}
+              <div className="absolute inset-0 bg-background/50 group-hover:bg-background/30 transition-all duration-500" />
 
               {/* Content */}
               <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
@@ -83,9 +85,6 @@ const PortfolioSection = () => {
                 </div>
                 <div className="h-[1px] bg-primary/0 group-hover:bg-primary/50 transition-all duration-500 mt-4" />
               </div>
-
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-500" />
             </motion.div>
           ))}
         </div>

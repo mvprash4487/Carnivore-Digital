@@ -1,14 +1,27 @@
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
+import heroBg from "/images/hero/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-charcoal" />
-      
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img
+          src={heroBg}
+          alt=""
+          className="w-full h-full object-cover"
+          width={1920}
+          height={1080}
+        />
+      </div>
+
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-background/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
+
       {/* Subtle gold radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-[0.03]"
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-[0.04]"
         style={{ background: "radial-gradient(circle, hsl(43 52% 54%) 0%, transparent 70%)" }}
       />
 
