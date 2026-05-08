@@ -54,7 +54,7 @@ const ContactSection = () => {
             </div>
             <div className="flex flex-col items-center gap-3">
               <Phone className="text-primary" size={20} strokeWidth={1.5} />
-              <p className="text-sm text-muted-foreground font-sans">+66 2 XXX XXXX</p>
+              <a href="tel:+66842217954" className="text-sm text-muted-foreground font-sans hover:text-primary transition-colors">+66 84 221 7954</a>
             </div>
             <div className="flex flex-col items-center gap-3">
               <MapPin className="text-primary" size={20} strokeWidth={1.5} />
