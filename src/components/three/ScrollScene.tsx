@@ -56,8 +56,9 @@ const ImagePlane = ({
   scale: [number, number];
   opacity?: number;
 }) => {
-  const tex = useLoader(TextureLoader, url);
-  tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = useTexture(url);
+  const { gl } = useThree();
+  useMemo(() => configureTexture(tex, gl.capabilities.getMaxAnisotropy()), [tex, gl]);
   return (
     <mesh position={position} rotation={rotation}>
       <planeGeometry args={[scale[0], scale[1], 1, 1]} />
