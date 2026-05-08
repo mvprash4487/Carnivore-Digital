@@ -5,7 +5,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Subtle gradient over the 3D canvas for legibility */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/10 to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/30 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center">
         <motion.p
