@@ -14,10 +14,10 @@ const ScrollScene = lazy(() => import("@/components/three/ScrollScene"));
 const Index = () => {
   return (
     <SmoothScroll>
-      <div className="bg-background text-foreground min-h-screen relative">
-        <Suspense fallback={null}>
-          <ScrollScene />
-        </Suspense>
+      <Suspense fallback={null}>
+        <ScrollScene />
+      </Suspense>
+      <div className="relative z-10 text-foreground min-h-screen">
         <Navigation />
         <HeroSection />
         <AboutSection />

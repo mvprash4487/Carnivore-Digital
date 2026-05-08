@@ -25,18 +25,19 @@ const configureTexture = (tex: THREE.Texture, maxAniso: number) => {
   return tex;
 };
 
-const useScrollProgress = () => {
-  const [p, setP] = useState(0);
+// Ref-based scroll progress — no React re-renders on scroll
+const scrollProgressRef = { current: 0 };
+const useScrollProgressRef = () => {
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
-      setP(h > 0 ? window.scrollY / h : 0);
+      scrollProgressRef.current = h > 0 ? window.scrollY / h : 0;
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return p;
+  return scrollProgressRef;
 };
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -114,8 +115,7 @@ const Embers = ({ count = 80 }: { count?: number }) => {
 const portfolio = [lobster, burgerChef, truffle, chefPlating, wineGlasses, burgerLobster];
 
 const Scene = () => {
-  const p = useScrollProgress();
-  const cam = useRef<THREE.PerspectiveCamera>(null!);
+  const progress = useScrollProgressRef();
   const heroRef = useRef<THREE.Group>(null!);
   const tukRef = useRef<THREE.Group>(null!);
   const orbitRef = useRef<THREE.Group>(null!);
@@ -123,23 +123,22 @@ const Scene = () => {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
+    const p = progress.current;
 
     // Camera dolly through sections
-    const z = lerp(4, 14, range(p, 0.15, 0.35)); // pull back in About
-    const z2 = lerp(z, 6, range(p, 0.55, 0.8)); // tighten on portfolio
-    const z3 = lerp(z2, 2, range(p, 0.92, 1)); // pull into black
+    const z = lerp(4, 14, range(p, 0.15, 0.35));
+    const z2 = lerp(z, 6, range(p, 0.55, 0.8));
+    const z3 = lerp(z2, 2, range(p, 0.92, 1));
     state.camera.position.z = z3;
     state.camera.position.x = Math.sin(t * 0.15) * 0.2;
     state.camera.position.y = lerp(0, -1.5, range(p, 0.55, 0.8));
 
-    // Hero flame plane
     if (heroRef.current) {
       const fade = 1 - range(p, 0.1, 0.22);
       heroRef.current.scale.setScalar(lerp(1, 1.2, range(p, 0, 0.2)));
       (heroRef.current.children[0] as any).material.opacity = fade * 0.9;
     }
 
-    // Tuktuk drift
     if (tukRef.current) {
       const tp = range(p, 0.18, 0.42);
       tukRef.current.position.x = lerp(-12, 12, tp);
@@ -147,7 +146,6 @@ const Scene = () => {
       (tukRef.current.children[0] as any).material.opacity = Math.sin(tp * Math.PI) * 0.5;
     }
 
-    // Services orbit
     if (orbitRef.current) {
       const op = range(p, 0.35, 0.55);
       orbitRef.current.rotation.y = op * Math.PI * 1.5 + t * 0.05;
@@ -155,7 +153,6 @@ const Scene = () => {
       orbitRef.current.scale.setScalar(lerp(0.6, 1, op));
     }
 
-    // Portfolio track fly-through
     if (trackRef.current) {
       const tp = range(p, 0.5, 0.85);
       trackRef.current.position.z = lerp(-30, 8, tp);
@@ -240,7 +237,7 @@ const ScrollScene = () => {
   }, []);
   if (!enabled) return null;
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none">
+    <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
         dpr={[1, 1.25]}
         frameloop={visible ? "always" : "never"}

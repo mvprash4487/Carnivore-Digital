@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="py-12 border-t border-border bg-charcoal">
+    <footer className="py-12 border-t border-border bg-charcoal/40 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="font-serif text-lg">
           <span className="text-gold-gradient">CARNIVORE</span>
