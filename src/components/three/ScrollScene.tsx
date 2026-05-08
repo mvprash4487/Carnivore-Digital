@@ -1,8 +1,7 @@
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
-import { TextureLoader } from "three";
-import { Float, Environment } from "@react-three/drei";
+import { Float, Environment, useTexture } from "@react-three/drei";
 
 import heroFlame from "@/assets/hero-flame.jpg";
 import lobster from "@/assets/lobster.jpg";
@@ -12,6 +11,19 @@ import chefPlating from "@/assets/chef-plating.jpg";
 import wineGlasses from "@/assets/wine-glasses.jpg";
 import burgerLobster from "@/assets/burger-lobster.jpg";
 import tuktuk from "@/assets/tuktuk.jpg";
+
+// Preload all textures once — drei caches them and shares across components
+const ALL_TEXTURES = [heroFlame, lobster, burgerChef, truffle, chefPlating, wineGlasses, burgerLobster, tuktuk];
+useTexture.preload(ALL_TEXTURES);
+
+const configureTexture = (tex: THREE.Texture, maxAniso: number) => {
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = Math.min(4, maxAniso);
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  return tex;
+};
 
 const useScrollProgress = () => {
   const [p, setP] = useState(0);
