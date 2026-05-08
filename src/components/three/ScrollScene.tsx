@@ -228,18 +228,23 @@ const Scene = () => {
 
 const ScrollScene = () => {
   const [enabled, setEnabled] = useState(true);
+  const [visible, setVisible] = useState(true);
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const small = window.innerWidth < 640;
     if (reduced || small) setEnabled(false);
+    const onVis = () => setVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
   if (!enabled) return null;
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none">
       <Canvas
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
+        frameloop={visible ? "always" : "never"}
         camera={{ position: [0, 0, 4], fov: 55 }}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: true, alpha: false, powerPreference: "high-performance", stencil: false, depth: true }}
       >
         <Suspense fallback={null}>
           <Scene />
