@@ -4,8 +4,7 @@ import { ArrowDown } from "lucide-react";
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Subtle gradient over the 3D canvas for legibility */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/30 pointer-events-none" />
+      {/* No overlay — let the 3D scene show through cleanly */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center">
         <motion.p

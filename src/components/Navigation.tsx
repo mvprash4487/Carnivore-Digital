@@ -27,12 +27,12 @@ const Navigation = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? "glass-strong border-b border-border py-4" : "py-6"
+        scrolled ? "glass-strong border-b border-border py-2" : "py-3"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        <a href="#" className="flex items-center">
-          <img src={logo} alt="Carnivore Digital" className="h-8 md:h-10 w-auto" />
+        <a href="#" className="flex items-center h-12 md:h-16">
+          <img src={logo} alt="Carnivore Digital" className="h-full w-auto" />
         </a>
 
         {/* Desktop Nav */}
