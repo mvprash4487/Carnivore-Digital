@@ -49,20 +49,32 @@ const ImagePlane = ({
   rotation,
   scale,
   opacity = 1,
+  animatedOpacity = false,
+  renderOrder = 0,
 }: {
   url: string;
   position: [number, number, number];
   rotation?: [number, number, number];
   scale: [number, number];
   opacity?: number;
+  // Set true when opacity will be mutated at runtime — forces transparent pass.
+  animatedOpacity?: boolean;
+  renderOrder?: number;
 }) => {
   const tex = useTexture(url);
   const { gl } = useThree();
   useMemo(() => configureTexture(tex, gl.capabilities.getMaxAnisotropy()), [tex, gl]);
+  const isTransparent = animatedOpacity || opacity < 1;
   return (
-    <mesh position={position} rotation={rotation}>
+    <mesh position={position} rotation={rotation} renderOrder={renderOrder}>
       <planeGeometry args={[scale[0], scale[1], 1, 1]} />
-      <meshBasicMaterial map={tex} transparent opacity={opacity} toneMapped={false} />
+      <meshBasicMaterial
+        map={tex}
+        transparent={isTransparent}
+        opacity={opacity}
+        depthWrite={!isTransparent}
+        toneMapped={false}
+      />
     </mesh>
   );
 };
