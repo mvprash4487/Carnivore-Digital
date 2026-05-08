@@ -137,9 +137,9 @@ const Scene = ({ isMobile, reducedMotion }: { isMobile: boolean; reducedMotion: 
 
     if (tukRef.current) {
       const tp = range(p, 0.18, 0.42);
-      tukRef.current.position.x = lerp(-12, 12, tp);
-      tukRef.current.position.y = Math.sin(tp * Math.PI) * 0.5 + 1.5;
-      (tukRef.current.children[0] as any).material.opacity = Math.sin(tp * Math.PI) * 0.5;
+      tukRef.current.position.x = lerp(-20, 20, tp);
+      tukRef.current.position.y = Math.sin(tp * Math.PI) * 0.3;
+      (tukRef.current.children[0] as any).material.opacity = Math.sin(tp * Math.PI) * 0.9;
     }
 
     if (orbitRef.current) {
@@ -173,8 +173,8 @@ const Scene = ({ isMobile, reducedMotion }: { isMobile: boolean; reducedMotion: 
 
       {!reducedMotion && <Embers count={isMobile ? 25 : 80} />}
 
-      <group ref={tukRef} position={[-12, 1.5, -3]}>
-        <ImagePlane url={tuktuk} position={[0, 0, 0]} scale={[3.2, 3.2]} opacity={0} animatedOpacity renderOrder={-1} />
+      <group ref={tukRef} position={[-20, 0, 0]}>
+        <ImagePlane url={tuktuk} position={[0, 0, 0]} scale={[16, 10]} opacity={0} animatedOpacity renderOrder={-1} />
       </group>
 
       {!isMobile && (

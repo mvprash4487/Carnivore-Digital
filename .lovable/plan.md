@@ -1,44 +1,30 @@
-## Why the 3D scene isn't visible
-
-Two things combine to hide it:
-
-1. **Mobile cutoff.** `ScrollScene.tsx` does `if (window.innerWidth < 640) setEnabled(false)` and returns `null`. On a 390 px preview the canvas is never mounted at all.
-2. **Heavy CSS vignette.** Even when mounted, an absolutely positioned div sits over the canvas with `radial-gradient(... transparent 35%, rgba(0,0,0,0.85) 100%)`. Combined with the per-section `bg-charcoal/40 backdrop-blur-sm` and the hero gradient, the visible area of the 3D scene shrinks to a tiny window in the center.
-
 ## Plan
 
-### 1. Always mount the canvas — add a "lite" mobile mode
+### 1. Tuk-tuk full screen
 In `src/components/three/ScrollScene.tsx`:
-- Remove the `small = innerWidth < 640` early-return. Mobile users should still see the scene.
-- Track an `isMobile` flag (with a resize listener) and pass it into `<Scene isMobile />`.
-- In lite mode:
-  - Lower DPR to `[1, 1]`, FOV slightly wider.
-  - Skip `<Environment preset="night" />` (expensive HDRI) — replace with a second cheap `pointLight`.
-  - Drop the `Embers` particle count from 80 → 25 and disable on `prefers-reduced-motion`.
-  - Skip the orbit cards group and the gold torus (decorative only).
-  - Keep: hero flame plane, tuktuk drift plane, portfolio fly-through track. These are the storytelling beats.
-- Keep `prefers-reduced-motion` as the only reason to fully disable.
+- Increase the tuktuk plane scale from `[3.2, 3.2]` to about `[14, 9]` so it covers the full viewport at the camera's near distance.
+- Move it closer to camera (`position z` ~ `0` instead of `-3`) and travel from `x: -20 → 20` so it sweeps fully across.
+- Boost peak opacity from `0.5` to `0.9` so it reads as a hero moment, not a faint cameo.
 
-### 2. Make the scene actually visible
-Still in `ScrollScene.tsx` and section files:
-- Soften the CSS vignette from `transparent 35% → rgba(0,0,0,0.85) 100%` to `transparent 55% → rgba(0,0,0,0.55) 100%` so the bright center is much larger and edges aren't crushed to black.
-- Replace `bg-charcoal/40 backdrop-blur-sm` on `ServicesSection` and `ClientsSection` with `bg-charcoal/15` (no blur). Backdrop-blur on a fixed canvas is what's flattening the 3D background into a smear.
-- Footer keeps its darker treatment but drop to `bg-charcoal/50` without blur.
-- HeroSection gradient: keep, it's already light.
-- AboutSection and PortfolioSection: leave fully transparent (already are).
+### 2. Remove the vignette
+- Delete the `radial-gradient` overlay div in `ScrollScene.tsx`. Nothing replaces it.
 
-### 3. Smooth the scroll a touch
-- In `SmoothScroll.tsx`, set `lerp: 0.1` (let Lenis interpolate) and remove `duration` so wheel/touch feels native instead of "easing into a target". Keep `wheelMultiplier: 1`, `touchMultiplier: 1.4`.
+### 3. Add the logo image
+- Copy `user-uploads://Logo_-_Carnivore_Digital.png` to `src/assets/logo-carnivore.png`.
+- In `src/components/Navigation.tsx`, replace the text wordmark with `<img src={logo} alt="Carnivore Digital" />`, sized roughly `h-8 md:h-10 w-auto`.
+- In `src/components/Footer.tsx`, replace the text wordmark with the same image at `h-8 w-auto`.
 
-### 4. Verify
-- Switch preview to mobile and desktop, confirm hero flame visible behind the headline, tuktuk drifts in About, portfolio planes glide through Portfolio.
-- Check console for three.js warnings; check FPS doesn't tank on mobile lite (target 45–60).
+### 4. Update phone number
+- In `src/components/ContactSection.tsx`, change `+66 2 XXX XXXX` → `+66 84 221 7954` and wrap it in a `tel:` link.
+
+### 5. Social links — LinkedIn only
+- In `src/components/Footer.tsx`, replace the `["Facebook", "Instagram", "LinkedIn"]` array with a single LinkedIn link to `https://www.linkedin.com/company/72004968/` opening in a new tab with `rel="noopener noreferrer"`.
 
 ### Files touched
 - `src/components/three/ScrollScene.tsx`
-- `src/components/SmoothScroll.tsx`
-- `src/components/ServicesSection.tsx`
-- `src/components/ClientsSection.tsx`
+- `src/components/Navigation.tsx`
 - `src/components/Footer.tsx`
+- `src/components/ContactSection.tsx`
+- `src/assets/logo-carnivore.png` (new)
 
-No new dependencies, no asset changes, no business-logic changes.
+No new dependencies.
