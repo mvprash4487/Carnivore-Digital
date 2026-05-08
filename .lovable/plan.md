@@ -1,10 +1,8 @@
 ## Plan
 
-Shift the Forge knot's lifecycle earlier so it appears just after the hero settles.
+1. Copy `user-uploads://Site_Icon.png` to `/tmp/site_icon.png`.
+2. Use ImageMagick to auto-trim white/transparent space and produce a square, transparent-background PNG: `public/favicon.png` (e.g. trim + pad to square, output ~512×512).
+3. Keep `index.html` favicon link as `/favicon.png` (already in place from prior change).
+4. Verify by viewing the resulting `public/favicon.png`.
 
-In `src/components/three/LiquidGoldScene.tsx`, `Knot` component:
-
-- `inT` range `0.30 → 0.50`  →  `0.10 → 0.30` (starts as About fades in, full-size by Services)
-- `outT` range `0.66 → 0.85` →  `0.62 → 0.82` (slightly earlier exit so it doesn't overlap the lattice)
-
-Single file, two-line change. Nothing else moves — sparks, lattice, camera spline stay as-is.
+No other files change.
