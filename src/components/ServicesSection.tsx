@@ -35,7 +35,7 @@ const ServicesSection = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="services" className="py-32 md:py-44 bg-charcoal/15 relative" ref={ref}>
+    <section id="services" className="py-32 md:py-44 relative" ref={ref}>
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Header */}
         <motion.div
