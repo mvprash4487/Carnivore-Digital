@@ -1,82 +1,61 @@
-## Direction — "Liquid Gold"
+## Direction — "Burgundy + Bone"
 
-Scrap every photo plane (flame, tuktuk, lobster, portfolio fly-through). Replace the entire background with a single, continuous abstract scene that scrolls like one long camera move through molten material. No photographs. No collage. Pure motion design driven by the gold/charcoal brand palette.
+Trade gold-on-black for **oxblood + bone**. The 3D scene shifts to deep wine reds and matte black; UI text becomes a warm bone (`#F2EAD8`); a single brass accent replaces gold for buttons, dividers, and small marks. Far better contrast (bone on burgundy is ~10:1) and stays on-brand for "Carnivore."
 
-The feeling: a dark gallery where a sculpture of light slowly turns. Apple-product-page restraint, not a showreel.
+## 1. Palette — token swap in `index.css` + `tailwind.config.ts`
 
-## The new scene — five chapters in one camera move
+Replace the existing HSL tokens. Light mode is unchanged (the site is dark-only).
 
 ```text
-  scroll 0 ─────────── 1
-  ┌──────┬──────┬──────┬──────┬──────┐
-  │ I    │ II   │ III  │ IV   │ V    │
-  │ Ember│ Drift│ Forge│ Lattice│ Dawn│
-  └──────┴──────┴──────┴──────┴──────┘
-   Hero   About  Servic Portfo Contact
+--background       0 0% 4%        # obsidian (unchanged)
+--foreground       36 38% 90%     # bone   #F2EAD8
+--muted-foreground 36 18% 70%     # warm gray-bone
+--card             0 30% 10%      # deep wine card
+--border           0 25% 18%      # wine border
+--primary          16 70% 48%     # brass-copper accent #CC5A2E ← replaces gold
+--accent           16 70% 48%     # same
+--ring             16 70% 48%
+--charcoal         0 30% 8%       # wine-black section bg
+--gold             16 70% 48%     # alias kept; renders brass now
+--gold-light       22 75% 60%
+--gold-dark        12 55% 32%
 ```
 
-**I. Ember (0–0.18) — Hero**
-A single point of warm gold light at the center, breathing. Behind it: a slow-rotating volumetric noise field (raymarched in a fragment shader), reading like dark smoke catching firelight. No objects, just atmosphere. Camera completely still. This is the calm.
+`text-gold-gradient` keeps its name but the linear-gradient stops shift to brass tones. `selection` becomes brass at 30% on bone. No component changes needed for the rename.
 
-**II. Drift (0.18–0.40) — About**
-Camera dollies forward into the smoke. Hundreds of GPU-instanced gold particles begin streaming past on curl-noise paths, like sparks caught in a draft. Density rises with scroll. Color stays in the `#0A0A0A → #C9A84C` band only.
+## 2. Scene recolor — `LiquidGoldScene.tsx`
 
-**III. Forge (0.40–0.62) — Services**
-The particles converge into a slowly turning torus knot rendered as a chrome-gold MeshPhysicalMaterial with anisotropy. Behind it, a soft bloom and a single rim light. The knot rotates one revolution across this chapter — the centerpiece.
+Just three constants change. Geometry, motion, structure all stay.
 
-**IV. Lattice (0.62–0.85) — Portfolio**
-The knot dissolves outward into a 3D grid of thin gold wireframe cells (instanced lines). The grid expands past the camera, giving the parallax illusion of flying through architecture. Subtle chromatic aberration on the post pass.
+- Smoke shader `uGold` → `uTone = #6B1220` (oxblood). Add a second tint `uHi = #C2532F` for highlights so the scene reads burgundy in shadow / brass in light.
+- Sparks color `#E0B85C` → `#E08A52` (warm brass).
+- Knot material: keep metalness 1, change `color #C9A84C` → `#8A1F2E` (oxblood) with `emissive #2A0509`. Reads as polished wine-lacquer chrome under brass rim light.
+- Lattice line color → `#A23A2C` (rust-brass). Lower opacity peak from 0.55 → 0.4.
+- Lights: directional `#E08A52`, point `#8A1F2E`. Ambient drops to 0.10 so blacks stay deep.
+- Bloom threshold 0.6 → 0.75 (less halo on bright UI text).
+- Background clear color `#070707` → `#0A0506` (the slightest red shift; helps blend).
 
-**V. Dawn (0.85–1) — Contact**
-Everything settles. The lattice fades, the smoke clears, a single horizon line of warm gold light glows at the bottom of the canvas like sunrise. Camera comes to rest.
+## 3. Choppiness fixes — same file
 
-Transitions between chapters are crossfades on the scroll progress curve — no hard cuts. The camera path is one continuous spline; chapters are just points along it.
+The current jumps come from three places.
 
-## Why this 100x's it
+- **Particle teleport.** `p.y = mod(p.y + 6.0, 12.0) - 6.0` snaps when a spark wraps. Replace with **alpha-fade-on-edges**: keep `p` unbounded but fade `vAlpha *= smoothstep(edge, 0., distFromCenter)` so sparks are invisible before they wrap. No more pops.
+- **Knot opacity flicker.** Transparent + animated `opacity` causes draw-order pops at chapter boundaries. Switch to **scale-in / scale-out** as the visibility driver (scale → 0 = effectively gone) and keep the material **opaque**. Removes the alpha sort glitch.
+- **Lattice respawn snap.** Same fix as sparks — fade-out the last 10% of cell life with `smoothstep` on `abs(z)` instead of a hard `mod` reset.
+- **Camera lerp.** `lerp(pos, 0.12)` is too aggressive at high scroll velocity → step jitter. Drop to `0.08` and additionally smooth the scroll progress itself with a one-pole filter (`sp += (target - sp) * 0.15` per frame). This is the single biggest perceived smoothness gain.
+- **`useScrollProgressRef`** currently writes the raw `scrollY/h` ratio. Add a separate `smoothScrollRef` updated in `useFrame` from the raw ref via the one-pole filter; every consumer (camera, shader uniforms, knot, lattice) reads the smoothed value. One source of truth → no chapters drift apart.
 
-- **One coherent world** instead of disconnected photo planes flying in. Apple/Stripe/Linear all do this — a single scene that *responds* to scroll.
-- **Brand-pure palette.** Removing photography removes color noise. Gold reads as gold.
-- **Procedural, not asset-based.** Shaders + instanced geometry → tiny payload, sharp at any DPR, no jpegs to load.
-- **Motion is the content.** Particles, rotation, parallax — the eye always has something moving slowly somewhere. Never busy.
-- **Legibility built in.** The scene is dark and low-contrast by design, so foreground type sits on it without overlays or vignettes.
+## 4. Section legibility cleanup
 
-## Technical plan
-
-New file: `src/components/three/LiquidGoldScene.tsx`. Delete the photo-plane scene entirely.
-
-- **Smoke field (I & II):** ShaderMaterial on a fullscreen plane behind everything. 3D simplex noise sampled at `(uv, time, scroll)`, output a radial gradient masked by noise, gold tint. ~30 lines of GLSL.
-- **Particles (II–III):** `THREE.Points` with 800 instances on desktop / 200 on mobile. Velocity from curl noise computed in vertex shader (no CPU loop). Additive blending, depth-write off.
-- **Torus knot (III):** `MeshPhysicalMaterial` with `roughness: 0.15`, `metalness: 1`, `clearcoat: 1`, `iridescence: 0.3`. One directional light + one rim light. Scale eased in/out via scroll range.
-- **Lattice (IV):** `InstancedMesh` of `EdgesGeometry(BoxGeometry)` — ~400 cells in a 3D grid, each cell scaled tiny but stroke-only. Camera flies through Z.
-- **Horizon (V):** A wide thin emissive plane at the bottom with a soft falloff shader.
-- **Post:** `@react-three/postprocessing` — Bloom (intensity 0.6, threshold 0.85) + faint ChromaticAberration (0.0008) + Vignette OFF.
-- **Camera spline:** A single `CatmullRomCurve3` with 5 control points; `camera.position = curve.getPoint(scrollProgress)`, `camera.lookAt(curve.getPoint(scrollProgress + 0.02))`. Smooth, no jumps.
-- **Scroll → time:** keep the existing ref-based `scrollProgressRef`. `useFrame` reads it and drives every uniform / position via eased ranges.
-- **Mobile lite:** disable post-processing, drop particle count to 200, swap MeshPhysicalMaterial → MeshStandardMaterial, lattice cells 120.
-- **Performance budget:** target 60 fps desktop / 45 fps mobile. DPR clamp `[1, 1.5]` desktop, `[1, 1]` mobile. Single `frameloop="always"` while tab visible.
-
-## What gets removed
-
-- All photo imports in `ScrollScene.tsx` (`heroFlame`, `tuktuk`, `lobster`, `burgerChef`, `truffle`, `chefPlating`, `wineGlasses`, `burgerLobster`).
-- The Embers points class, the orbit cards group, the gold torus, the portfolio fly-through track, the hero flame plane.
-- The photo asset files themselves — leave on disk for now in case you want them in PortfolioSection later, but unimport from the 3D scene.
-- The `<Environment preset="night" />` HDRI — replaced by explicit lights.
-
-## Section layer cleanup
-
-With a coherent dark scene, the section translucency tweaks from before are no longer needed:
-
-- `ServicesSection` and `ClientsSection`: remove `bg-charcoal/15`, go fully transparent.
-- `Footer`: keep `bg-charcoal/50` (it's a deliberate rest zone).
-- `HeroSection`: already overlay-free, leave it.
+- `Footer` keeps its dark wine rest zone — change `bg-charcoal/50` to `bg-[hsl(var(--charcoal))]/60` (now wine-black).
+- `Services`/`Clients` stay fully transparent — bone-on-scene contrast is now strong enough.
+- Hero already overlay-free, no change.
 
 ## Files touched
 
-- `src/components/three/LiquidGoldScene.tsx` *(new)*
-- `src/components/three/ScrollScene.tsx` *(deleted)*
-- `src/pages/Index.tsx` *(import swap)*
-- `src/components/ServicesSection.tsx`
-- `src/components/ClientsSection.tsx`
-- `package.json` *(add `@react-three/postprocessing@^2.16` — compatible with R3F 8)*
+- `src/index.css` — palette tokens
+- `tailwind.config.ts` — gold/charcoal helpers if referenced
+- `src/components/three/LiquidGoldScene.tsx` — colors + smoothing fixes
+- `src/components/Footer.tsx` — token swap
 
-No new design assets, no image generation, no copy changes.
+No structural changes, no new dependencies, no asset changes.
