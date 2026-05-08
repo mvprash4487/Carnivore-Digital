@@ -25,18 +25,19 @@ const configureTexture = (tex: THREE.Texture, maxAniso: number) => {
   return tex;
 };
 
-const useScrollProgress = () => {
-  const [p, setP] = useState(0);
+// Ref-based scroll progress — no React re-renders on scroll
+const scrollProgressRef = { current: 0 };
+const useScrollProgressRef = () => {
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
-      setP(h > 0 ? window.scrollY / h : 0);
+      scrollProgressRef.current = h > 0 ? window.scrollY / h : 0;
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return p;
+  return scrollProgressRef;
 };
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
