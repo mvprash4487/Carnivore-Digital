@@ -9,13 +9,13 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 
-const ScrollScene = lazy(() => import("@/components/three/ScrollScene"));
+const LiquidGoldScene = lazy(() => import("@/components/three/LiquidGoldScene"));
 
 const Index = () => {
   return (
     <SmoothScroll>
       <Suspense fallback={null}>
-        <ScrollScene />
+        <LiquidGoldScene />
       </Suspense>
       <div className="relative z-10 text-foreground min-h-screen">
         <Navigation />
