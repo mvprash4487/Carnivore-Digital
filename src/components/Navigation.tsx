@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo-carnivore.png";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -30,9 +31,8 @@ const Navigation = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        <a href="#" className="font-serif text-xl md:text-2xl font-bold tracking-wide">
-          <span className="text-gold-gradient">CARNIVORE</span>
-          <span className="text-foreground ml-1 font-light">DIGITAL</span>
+        <a href="#" className="flex items-center">
+          <img src={logo} alt="Carnivore Digital" className="h-8 md:h-10 w-auto" />
         </a>
 
         {/* Desktop Nav */}

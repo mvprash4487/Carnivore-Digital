@@ -256,11 +256,6 @@ const ScrollScene = () => {
           <Scene isMobile={isMobile} reducedMotion={reducedMotion} />
         </Suspense>
       </Canvas>
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)" }}
-      />
     </div>
   );
 };
