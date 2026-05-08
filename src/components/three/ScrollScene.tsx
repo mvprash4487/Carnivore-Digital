@@ -170,16 +170,16 @@ const Scene = () => {
       <pointLight position={[0, 3, 4]} intensity={2} color="#E0B85C" />
       <Environment preset="night" />
 
-      {/* Hero flame */}
+      {/* Hero flame — opacity animated, render first behind everything */}
       <group ref={heroRef} position={[0, 0, 0]}>
-        <ImagePlane url={heroFlame} position={[0, 0, 0]} scale={[8, 5]} />
+        <ImagePlane url={heroFlame} position={[0, 0, 0]} scale={[8, 5]} animatedOpacity renderOrder={-2} />
       </group>
 
       <Embers />
 
-      {/* Tuktuk drift in About */}
+      {/* Tuktuk drift in About — animated opacity */}
       <group ref={tukRef} position={[-12, 1.5, -3]}>
-        <ImagePlane url={tuktuk} position={[0, 0, 0]} scale={[3.2, 3.2]} opacity={0} />
+        <ImagePlane url={tuktuk} position={[0, 0, 0]} scale={[3.2, 3.2]} opacity={0} animatedOpacity renderOrder={-1} />
       </group>
 
       {/* Gold ring */}
@@ -198,7 +198,7 @@ const Scene = () => {
             <Float key={i} speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
               <mesh position={[Math.cos(a) * 3, Math.sin(a) * 0.6, Math.sin(a) * 3]} rotation={[0, -a, 0]}>
                 <planeGeometry args={[1.6, 2.2]} />
-                <meshStandardMaterial color="#1a1a1a" emissive="#C9A84C" emissiveIntensity={0.05} metalness={0.8} roughness={0.3} side={THREE.DoubleSide} />
+                <meshStandardMaterial color="#1a1a1a" emissive="#C9A84C" emissiveIntensity={0.05} metalness={0.8} roughness={0.3} />
               </mesh>
             </Float>
           );
@@ -223,17 +223,6 @@ const Scene = () => {
         })}
       </group>
 
-      {/* Vignette */}
-      <mesh position={[0, 0, -5]} scale={[60, 40, 1]}>
-        <planeGeometry />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          uniforms={{}}
-          vertexShader={`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} `}
-          fragmentShader={`varying vec2 vUv; void main(){ float d=distance(vUv,vec2(0.5)); gl_FragColor=vec4(0.0,0.0,0.0, smoothstep(0.3,0.85,d)*0.85); }`}
-        />
-      </mesh>
     </>
   );
 };
@@ -262,6 +251,12 @@ const ScrollScene = () => {
           <Scene />
         </Suspense>
       </Canvas>
+      {/* CSS vignette — cheaper than a fullscreen transparent quad inside the canvas */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%)" }}
+      />
     </div>
   );
 };
