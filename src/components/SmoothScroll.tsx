@@ -4,8 +4,7 @@ import Lenis from "lenis";
 const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
+      lerp: 0.1,
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 1.4,

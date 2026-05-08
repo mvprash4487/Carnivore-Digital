@@ -12,7 +12,6 @@ import wineGlasses from "@/assets/wine-glasses.jpg";
 import burgerLobster from "@/assets/burger-lobster.jpg";
 import tuktuk from "@/assets/tuktuk.jpg";
 
-// Preload all textures once — drei caches them and shares across components
 const ALL_TEXTURES = [heroFlame, lobster, burgerChef, truffle, chefPlating, wineGlasses, burgerLobster, tuktuk];
 useTexture.preload(ALL_TEXTURES);
 
@@ -25,7 +24,6 @@ const configureTexture = (tex: THREE.Texture, maxAniso: number) => {
   return tex;
 };
 
-// Ref-based scroll progress — no React re-renders on scroll
 const scrollProgressRef = { current: 0 };
 const useScrollProgressRef = () => {
   useEffect(() => {
@@ -58,7 +56,6 @@ const ImagePlane = ({
   rotation?: [number, number, number];
   scale: [number, number];
   opacity?: number;
-  // Set true when opacity will be mutated at runtime — forces transparent pass.
   animatedOpacity?: boolean;
   renderOrder?: number;
 }) => {
@@ -114,7 +111,7 @@ const Embers = ({ count = 80 }: { count?: number }) => {
 
 const portfolio = [lobster, burgerChef, truffle, chefPlating, wineGlasses, burgerLobster];
 
-const Scene = () => {
+const Scene = ({ isMobile, reducedMotion }: { isMobile: boolean; reducedMotion: boolean }) => {
   const progress = useScrollProgressRef();
   const heroRef = useRef<THREE.Group>(null!);
   const tukRef = useRef<THREE.Group>(null!);
@@ -125,7 +122,6 @@ const Scene = () => {
     const t = state.clock.elapsedTime;
     const p = progress.current;
 
-    // Camera dolly through sections
     const z = lerp(4, 14, range(p, 0.15, 0.35));
     const z2 = lerp(z, 6, range(p, 0.55, 0.8));
     const z3 = lerp(z2, 2, range(p, 0.92, 1));
@@ -163,46 +159,49 @@ const Scene = () => {
     <>
       <color attach="background" args={["#0A0A0A"]} />
       <fog attach="fog" args={["#0A0A0A", 8, 30]} />
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={isMobile ? 0.55 : 0.4} />
       <pointLight position={[0, 3, 4]} intensity={2} color="#E0B85C" />
-      <Environment preset="night" />
+      {isMobile ? (
+        <pointLight position={[-3, -2, 3]} intensity={0.6} color="#C9A84C" />
+      ) : (
+        <Environment preset="night" />
+      )}
 
-      {/* Hero flame — opacity animated, render first behind everything */}
       <group ref={heroRef} position={[0, 0, 0]}>
         <ImagePlane url={heroFlame} position={[0, 0, 0]} scale={[8, 5]} animatedOpacity renderOrder={-2} />
       </group>
 
-      <Embers />
+      {!reducedMotion && <Embers count={isMobile ? 25 : 80} />}
 
-      {/* Tuktuk drift in About — animated opacity */}
       <group ref={tukRef} position={[-12, 1.5, -3]}>
         <ImagePlane url={tuktuk} position={[0, 0, 0]} scale={[3.2, 3.2]} opacity={0} animatedOpacity renderOrder={-1} />
       </group>
 
-      {/* Gold ring */}
-      <Float speed={1} rotationIntensity={0.3} floatIntensity={0.4}>
-        <mesh position={[0, 0, -2]} rotation={[Math.PI / 2.4, 0, 0]}>
-          <torusGeometry args={[2.4, 0.012, 16, 120]} />
-          <meshStandardMaterial color="#C9A84C" emissive="#C9A84C" emissiveIntensity={0.6} metalness={1} roughness={0.2} />
-        </mesh>
-      </Float>
+      {!isMobile && (
+        <>
+          <Float speed={1} rotationIntensity={0.3} floatIntensity={0.4}>
+            <mesh position={[0, 0, -2]} rotation={[Math.PI / 2.4, 0, 0]}>
+              <torusGeometry args={[2.4, 0.012, 16, 120]} />
+              <meshStandardMaterial color="#C9A84C" emissive="#C9A84C" emissiveIntensity={0.6} metalness={1} roughness={0.2} />
+            </mesh>
+          </Float>
 
-      {/* Services orbit cards */}
-      <group ref={orbitRef} position={[0, -8, 0]}>
-        {[0, 1, 2, 3].map((i) => {
-          const a = (i / 4) * Math.PI * 2;
-          return (
-            <Float key={i} speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-              <mesh position={[Math.cos(a) * 3, Math.sin(a) * 0.6, Math.sin(a) * 3]} rotation={[0, -a, 0]}>
-                <planeGeometry args={[1.6, 2.2]} />
-                <meshStandardMaterial color="#1a1a1a" emissive="#C9A84C" emissiveIntensity={0.05} metalness={0.8} roughness={0.3} />
-              </mesh>
-            </Float>
-          );
-        })}
-      </group>
+          <group ref={orbitRef} position={[0, -8, 0]}>
+            {[0, 1, 2, 3].map((i) => {
+              const a = (i / 4) * Math.PI * 2;
+              return (
+                <Float key={i} speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
+                  <mesh position={[Math.cos(a) * 3, Math.sin(a) * 0.6, Math.sin(a) * 3]} rotation={[0, -a, 0]}>
+                    <planeGeometry args={[1.6, 2.2]} />
+                    <meshStandardMaterial color="#1a1a1a" emissive="#C9A84C" emissiveIntensity={0.05} metalness={0.8} roughness={0.3} />
+                  </mesh>
+                </Float>
+              );
+            })}
+          </group>
+        </>
+      )}
 
-      {/* Portfolio fly-through track */}
       <group ref={trackRef}>
         {portfolio.map((src, i) => {
           const side = i % 2 === 0 ? -1 : 1;
@@ -219,40 +218,48 @@ const Scene = () => {
           );
         })}
       </group>
-
     </>
   );
 };
 
 const ScrollScene = () => {
   const [enabled, setEnabled] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [visible, setVisible] = useState(true);
+
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const small = window.innerWidth < 640;
-    if (reduced || small) setEnabled(false);
+    setReducedMotion(reduced);
+    if (reduced) setEnabled(false);
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    onResize();
+    window.addEventListener("resize", onResize);
     const onVis = () => setVisible(!document.hidden);
     document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, []);
+
   if (!enabled) return null;
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
-        dpr={[1, 1.25]}
+        dpr={isMobile ? [1, 1] : [1, 1.25]}
         frameloop={visible ? "always" : "never"}
-        camera={{ position: [0, 0, 4], fov: 55 }}
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance", stencil: false, depth: true }}
+        camera={{ position: [0, 0, 4], fov: isMobile ? 60 : 55 }}
+        gl={{ antialias: !isMobile, alpha: false, powerPreference: "high-performance", stencil: false, depth: true }}
       >
         <Suspense fallback={null}>
-          <Scene />
+          <Scene isMobile={isMobile} reducedMotion={reducedMotion} />
         </Suspense>
       </Canvas>
-      {/* CSS vignette — cheaper than a fullscreen transparent quad inside the canvas */}
       <div
         aria-hidden
         className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%)" }}
+        style={{ background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)" }}
       />
     </div>
   );

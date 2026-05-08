@@ -1,46 +1,44 @@
-# Fix: 3D Background Invisible + Choppy Scroll
+## Why the 3D scene isn't visible
 
-Two real bugs are causing both symptoms.
+Two things combine to hide it:
 
-## Bug 1 — Background is invisible
+1. **Mobile cutoff.** `ScrollScene.tsx` does `if (window.innerWidth < 640) setEnabled(false)` and returns `null`. On a 390 px preview the canvas is never mounted at all.
+2. **Heavy CSS vignette.** Even when mounted, an absolutely positioned div sits over the canvas with `radial-gradient(... transparent 35%, rgba(0,0,0,0.85) 100%)`. Combined with the per-section `bg-charcoal/40 backdrop-blur-sm` and the hero gradient, the visible area of the 3D scene shrinks to a tiny window in the center.
 
-The canvas is mounted at `fixed inset-0 -z-10`, but:
+## Plan
 
-- `<body>` has `bg-background` (near-black) painting *over* it
-- `Index.tsx`'s root wrapper has `bg-background` painting over it again
-- Sections (`ServicesSection`, `ClientsSection`, `Footer`, hero gradient) all have opaque `bg-charcoal` / `bg-background` fills
+### 1. Always mount the canvas — add a "lite" mobile mode
+In `src/components/three/ScrollScene.tsx`:
+- Remove the `small = innerWidth < 640` early-return. Mobile users should still see the scene.
+- Track an `isMobile` flag (with a resize listener) and pass it into `<Scene isMobile />`.
+- In lite mode:
+  - Lower DPR to `[1, 1]`, FOV slightly wider.
+  - Skip `<Environment preset="night" />` (expensive HDRI) — replace with a second cheap `pointLight`.
+  - Drop the `Embers` particle count from 80 → 25 and disable on `prefers-reduced-motion`.
+  - Skip the orbit cards group and the gold torus (decorative only).
+  - Keep: hero flame plane, tuktuk drift plane, portfolio fly-through track. These are the storytelling beats.
+- Keep `prefers-reduced-motion` as the only reason to fully disable.
 
-So the 3D scene is rendering correctly — it's just hidden behind layers of black.
+### 2. Make the scene actually visible
+Still in `ScrollScene.tsx` and section files:
+- Soften the CSS vignette from `transparent 35% → rgba(0,0,0,0.85) 100%` to `transparent 55% → rgba(0,0,0,0.55) 100%` so the bright center is much larger and edges aren't crushed to black.
+- Replace `bg-charcoal/40 backdrop-blur-sm` on `ServicesSection` and `ClientsSection` with `bg-charcoal/15` (no blur). Backdrop-blur on a fixed canvas is what's flattening the 3D background into a smear.
+- Footer keeps its darker treatment but drop to `bg-charcoal/50` without blur.
+- HeroSection gradient: keep, it's already light.
+- AboutSection and PortfolioSection: leave fully transparent (already are).
 
-### Fix
-- Move the canvas to `fixed inset-0 z-0` (not negative)
-- Remove `bg-background` from `Index.tsx`'s wrapper; make body transparent (keep `--background` as a fallback `<html>` color so there's no flash)
-- Wrap page content in `relative z-10` so it sits above the canvas
-- Replace opaque section fills (`bg-charcoal`, full-width hero gradient) with subtle dark gradient overlays (`from-background/80 to-background/40`) so the 3D scene shows through but text stays legible
-- Footer + Clients can keep a near-opaque dark layer for contrast — that's intentional dark "rest" zones between 3D moments
+### 3. Smooth the scroll a touch
+- In `SmoothScroll.tsx`, set `lerp: 0.1` (let Lenis interpolate) and remove `duration` so wheel/touch feels native instead of "easing into a target". Keep `wheelMultiplier: 1`, `touchMultiplier: 1.4`.
 
-## Bug 2 — Choppy scrolling
+### 4. Verify
+- Switch preview to mobile and desktop, confirm hero flame visible behind the headline, tuktuk drifts in About, portfolio planes glide through Portfolio.
+- Check console for three.js warnings; check FPS doesn't tank on mobile lite (target 45–60).
 
-Three compounding causes:
+### Files touched
+- `src/components/three/ScrollScene.tsx`
+- `src/components/SmoothScroll.tsx`
+- `src/components/ServicesSection.tsx`
+- `src/components/ClientsSection.tsx`
+- `src/components/Footer.tsx`
 
-1. **`useScrollProgress` calls `setState` on every scroll tick**, re-rendering the entire `<Scene>` tree (and re-running every `useMemo`/`useTexture` lookup) 60+ times a second. This is the main cause of jank.
-2. **`html { scroll-behavior: smooth }` in `index.css`** fights with Lenis — both try to interpolate scroll, causing stutter.
-3. Lenis duration is set to 1.4s with a stiff easing — too long, feels rubbery on fast wheels.
-
-### Fix
-- Replace the `useState`-based scroll hook with a **ref-based** one: a single `window` scroll listener writes to `scrollProgressRef.current`, and `useFrame` reads it. Zero React re-renders during scroll.
-- Remove `scroll-behavior: smooth` from `index.css`.
-- Tune Lenis: `duration: 1.1`, simpler easing, `wheelMultiplier: 1`.
-
-## Files to change
-
-- `src/components/three/ScrollScene.tsx` — ref-based scroll, canvas at `z-0`
-- `src/pages/Index.tsx` — wrapper transparent, content at `z-10`
-- `src/index.css` — remove smooth scroll, add `html { background: hsl(var(--background)) }`
-- `src/components/SmoothScroll.tsx` — Lenis tuning
-- `src/components/HeroSection.tsx`, `ServicesSection.tsx`, `ClientsSection.tsx`, `Footer.tsx` — swap opaque fills for translucent overlays so the 3D scene reads through
-
-## Out of scope
-
-- No new 3D content — purely fixing what's already there
-- No dependency changes
+No new dependencies, no asset changes, no business-logic changes.
