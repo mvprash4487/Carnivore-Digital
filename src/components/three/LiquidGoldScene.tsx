@@ -211,8 +211,8 @@ const Knot = ({ isMobile }: { isMobile: boolean }) => {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame((state) => {
     const p = smoothScrollRef.current;
-    const inT  = smooth(range(p, 0.30, 0.50));
-    const outT = smooth(range(p, 0.66, 0.85));
+    const inT  = smooth(range(p, 0.10, 0.30));
+    const outT = smooth(range(p, 0.62, 0.82));
     const presence = inT * (1 - outT);
     const sc = presence * lerp(0.6, 1.6, inT);
     const mesh = ref.current;
