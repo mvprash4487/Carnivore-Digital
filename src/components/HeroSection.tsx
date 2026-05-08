@@ -1,32 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
-import heroBg from "/images/hero/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroBg}
-          alt=""
-          className="w-full h-full object-cover"
-          width={1920}
-          height={1080}
-        />
-      </div>
-
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-background/70" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
-
-      {/* Subtle gold radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-[0.04]"
-        style={{ background: "radial-gradient(circle, hsl(43 52% 54%) 0%, transparent 70%)" }}
-      />
+      {/* Subtle gradient over the 3D canvas for legibility */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/10 to-background pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center">
-        {/* Overline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -36,12 +17,11 @@ const HeroSection = () => {
           Premium Digital Agency
         </motion.p>
 
-        {/* Main Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8"
+          className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8 [text-shadow:0_2px_30px_rgba(0,0,0,0.7)]"
         >
           <span className="block">We'll Devour</span>
           <span className="block mt-2">
@@ -49,7 +29,6 @@ const HeroSection = () => {
           </span>
         </motion.h1>
 
-        {/* Gold Divider */}
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "120px" }}
@@ -57,18 +36,16 @@ const HeroSection = () => {
           className="h-[1px] bg-primary mx-auto mb-8"
         />
 
-        {/* Subtext */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.2 }}
           className="text-muted-foreground max-w-xl mx-auto text-sm md:text-base leading-relaxed mb-10 font-sans"
         >
-          Crafting digital experiences that command attention. Strategy, design, and technology — 
+          Crafting digital experiences that command attention. Strategy, design, and technology —
           fused into something extraordinary.
         </motion.p>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -76,40 +53,21 @@ const HeroSection = () => {
         >
           <a
             href="#contact"
-            className="inline-block border border-primary text-primary px-10 py-4 text-xs tracking-[0.3em] uppercase font-sans hover:bg-primary hover:text-primary-foreground transition-all duration-500"
+            className="inline-block border border-primary text-primary px-10 py-4 text-xs tracking-[0.3em] uppercase font-sans hover:bg-primary hover:text-primary-foreground transition-all duration-500 backdrop-blur-sm"
           >
             Start a Project
           </a>
         </motion.div>
-
-        {/* Pull Quote */}
-        <motion.blockquote
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
-          className="mt-20 md:mt-28"
-        >
-          <p className="font-serif italic text-sm md:text-lg text-muted-foreground/60 max-w-lg mx-auto">
-            "Design is not just what it looks like and feels like. Design is how it works."
-          </p>
-          <cite className="block mt-3 text-xs tracking-[0.2em] uppercase text-primary/60 font-sans not-italic">
-            — Steve Jobs
-          </cite>
-        </motion.blockquote>
       </div>
 
-      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <ArrowDown className="text-primary/40" size={20} />
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+          <ArrowDown className="text-primary/60" size={20} />
         </motion.div>
       </motion.div>
     </section>
