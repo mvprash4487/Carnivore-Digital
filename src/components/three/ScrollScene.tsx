@@ -237,7 +237,7 @@ const ScrollScene = () => {
   }, []);
   if (!enabled) return null;
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none">
+    <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
         dpr={[1, 1.25]}
         frameloop={visible ? "always" : "never"}
