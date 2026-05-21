@@ -15,7 +15,7 @@ const Index = () => {
   return (
     <SmoothScroll>
       <Suspense fallback={null}>
-        <LiquidGoldScene />
+        <ScrollFacadeBackground />
       </Suspense>
       <div className="relative z-10 text-foreground min-h-screen">
         <Navigation />
