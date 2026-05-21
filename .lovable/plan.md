@@ -1,35 +1,25 @@
-## Plan: Section-chunked facade pan
+## Plan: Regenerate with straight-up 90° pan + 360 frames
 
-### Goal
-Instead of mapping every scroll pixel to a frame (continuous scrub), divide the 100 frames into one chunk per page section. As the user scrolls a section, the pan eases through that section's frame range, then "rests" briefly between sections so each floor reads as its own beat.
+### 1. Regenerate the video
+- Call `videogen--generate_video` with a tighter prompt: modern 5-star hotel facade, **locked vertical tilt-up only, 90° straight upward camera move, no horizontal drift, no zoom, no roll**, starting at the ground-floor entrance and ending framed on the 11th-floor crown. Modern (not ornate) architecture — clean stone + floor-to-ceiling glass, brushed bronze fins, soft warm interior glow, dusk sky.
+- Settings: 1080p, 9:16, 10s, `camera_fixed: false` (camera must move up).
+- Save to `/tmp/hotel_facade_v2.mp4`. Spot-check first/middle/last frame to confirm it's a pure vertical pan before committing.
+- If the model adds horizontal drift, retry with even stricter wording ("locked tripod tilt, axis purely vertical").
 
-### Sections (in order, from `Index.tsx`)
-1. Hero
-2. About
-3. Services
-4. Portfolio
-5. Clients
-6. Contact
-7. Footer
+### 2. Re-extract to ~360 frames
+- Delete `public/facade/*.jpg`.
+- Use ffmpeg: `fps=36, scale=480:-2` → ~360 WebP frames (better compression than JPEG, ~50–60% smaller at same quality).
+  `ffmpeg -i ... -vf "fps=36,scale=480:-2" -q:v 70 public/facade/frame_%04d.webp`
+- Target total payload ≤ 12 MB. If still heavy, drop to 320 frames @ 440px.
 
-7 sections → split 100 frames into 7 ranges (~14 frames each, last one to 99).
+### 3. Update the bg component
+- Change `FRAME_COUNT` to actual count and `framePath` to `.webp`.
+- Bump RAF lerp factor from `0.12` → `~0.18` so a much denser frame array catches up faster (otherwise chunked moves feel laggy with 3.6× more frames).
+- Slightly reduce `HOLD` from `0.12` → `0.06` so most of each section is spent moving (since each section now gets ~51 frames, there's room to actually pan instead of holding).
 
-### Changes
-**`src/components/ScrollFacadeBackground.tsx`**
-- Add IDs (or rely on existing ones) to each `<section>` so the bg component can `querySelectorAll` them on mount. Fallback: query `main > section, footer`.
-- On scroll, for each section measure its top/bottom relative to viewport center. Determine:
-  - which section is "active" (its midpoint is closest to viewport center, or whose range [top, bottom] contains the center line)
-  - local progress `t` within that section (0 → 1)
-- Apply an ease (`smoothstep`) to `t`, then compute frame:
-  `frame = floor(lerp(rangeStart, rangeEnd, eased(t)))`
-- Add a small "hold" at each end: clamp `t` into `[0.1, 0.9]` then remap, so each section starts and ends on a stable frame (the chunked feel).
-- Smooth between scroll events with a single requestAnimationFrame loop that lerps `displayFrame` toward `targetFrame` at ~0.15 per tick, so chunks transition cleanly even with Lenis smooth scroll.
+### 4. Verify
+- Page should: each section panning ~5 floors of facade with no lateral drift; transitions between sections smooth; no visible frame popping on mobile (390px) or desktop.
 
-**Index.tsx / sections**
-- Ensure each top-level section is a direct child wrapper the bg can find. If components already render `<section>`, no change needed; otherwise wrap them in `<section data-facade-chunk>` in `Index.tsx`.
-
-### Also "fix the scroll first"
-Interpreting as: the current continuous scrub feels janky / not aligned. The new model fixes both — per-section chunks + RAF-lerped frame index removes pixel-by-pixel jitter and aligns visual beats with content beats.
-
-### Out of scope
-- Regenerating the video for a perfectly vertical parallel pan (user said "let's see if this works" first). If after this they still want a true parallel-axis pan, we re-generate with a stricter prompt.
+### Notes
+- WebP is supported by all modern browsers Lovable previews target.
+- If video gen still produces a slow/short pan that doesn't reach the 11th floor, we'll re-run once more rather than fake it with frame remapping.
