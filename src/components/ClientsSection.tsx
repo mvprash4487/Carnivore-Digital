@@ -2,12 +2,12 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const CLIENT_LOGOS = [
-  { name: "Ocean",            src: "/clients/Ocean%202.png"                      },
-  { name: "Radisson Blu",     src: "/clients/Radisson%20Blu.png"                 },
-  { name: "Aspira",           src: "/clients/Aspira.png"                         },
-  { name: "Marriott Bangkok", src: "/clients/Marriott%20Bangkok%20Sukhumvit.png" },
-  { name: "Getfresh",         src: "/clients/Getfresh%20White%20Background.png"  },
-  { name: "ROSH",             src: "/clients/rosh%20logo.png"                    },
+  { name: "Ocean",            src: "/clients/ocean.png"           },
+  { name: "Radisson Blu",     src: "/clients/radisson-blu.png"    },
+  { name: "Aspira",           src: "/clients/aspira.png"          },
+  { name: "Marriott Bangkok", src: "/clients/marriott-bangkok.png"},
+  { name: "Getfresh",         src: "/clients/getfresh.png"        },
+  { name: "ROSH",             src: "/clients/rosh.png"            },
 ];
 
 const ClientsSection = () => {
