@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
+
+const HotelScene = lazy(() => import("@/components/three/HotelScene"));
 
 const CHAPTERS = [
   { range: [0.00, 0.17] as [number, number], src: "/videos/01-lobby.mp4"      },
@@ -18,9 +20,10 @@ function getChapterIndex(scrollProgress: number): number {
 }
 
 const VideoBackground = () => {
-  const videoRefs  = useRef<(HTMLVideoElement | null)[]>([]);
-  const activeRef  = useRef(0);
+  const videoRefs   = useRef<(HTMLVideoElement | null)[]>([]);
+  const activeRef   = useRef(0);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [videosReady, setVideosReady] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -50,29 +53,44 @@ const VideoBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none bg-[#0A0506]">
-      {CHAPTERS.map((ch, i) => (
-        <video
-          key={ch.src}
-          ref={(el) => { videoRefs.current[i] = el; }}
-          src={ch.src}
-          muted
-          playsInline
-          preload="auto"
-          loop
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: activeIdx === i ? 1 : 0,
-            transition: "opacity 0.8s ease",
-          }}
-        />
-      ))}
-      {/* Legibility overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
+    <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Three.js fallback — shows when videos aren't available */}
+      <Suspense fallback={null}>
+        <HotelScene />
+      </Suspense>
+
+      {/* Video layer — fades in once first video is ready, sits on top of fallback */}
+      <div
+        style={{
+          position: "absolute", inset: 0,
+          opacity: videosReady ? 1 : 0,
+          transition: "opacity 1.2s ease",
+        }}
+      >
+        {CHAPTERS.map((ch, i) => (
+          <video
+            key={ch.src}
+            ref={(el) => { videoRefs.current[i] = el; }}
+            src={ch.src}
+            muted
+            playsInline
+            preload="auto"
+            loop
+            onLoadedData={() => { if (i === 0) setVideosReady(true); }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: activeIdx === i ? 1 : 0,
+              transition: "opacity 0.8s ease",
+            }}
+          />
+        ))}
+        {/* Legibility overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
+      </div>
     </div>
   );
 };
