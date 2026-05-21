@@ -1,13 +1,20 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
+import aspiraLogo       from "@/assets/clients/aspira.png";
+import radissonLogo     from "@/assets/clients/radisson-blu.png";
+import oceanLogo        from "@/assets/clients/ocean.png";
+import marriottLogo     from "@/assets/clients/marriott-bangkok.png";
+import getfreshLogo     from "@/assets/clients/getfresh.png";
+import roshLogo         from "@/assets/clients/rosh.png";
+
 const CLIENT_LOGOS = [
-  { name: "Ocean",            src: "/clients/ocean.png"           },
-  { name: "Radisson Blu",     src: "/clients/radisson-blu.png"    },
-  { name: "Aspira",           src: "/clients/aspira.png"          },
-  { name: "Marriott Bangkok", src: "/clients/marriott-bangkok.png"},
-  { name: "Getfresh",         src: "/clients/getfresh.png"        },
-  { name: "ROSH",             src: "/clients/rosh.png"            },
+  { name: "Ocean",            logo: oceanLogo        },
+  { name: "Radisson Blu",     logo: radissonLogo     },
+  { name: "Aspira",           logo: aspiraLogo       },
+  { name: "Marriott Bangkok", logo: marriottLogo     },
+  { name: "Getfresh",         logo: getfreshLogo     },
+  { name: "ROSH",             logo: roshLogo         },
 ];
 
 const ClientsSection = () => {
@@ -51,7 +58,7 @@ const ClientsSection = () => {
               className="group aspect-square flex items-center justify-center p-4 rounded-lg border border-border/40 bg-card/30 hover:border-primary/30 hover:bg-card/60 transition-all duration-500"
             >
               <img
-                src={client.src}
+                src={client.logo}
                 alt={client.name}
                 className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-500"
               />
