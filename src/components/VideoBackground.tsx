@@ -2,13 +2,15 @@ import { useEffect, useRef, useState, lazy, Suspense } from "react";
 
 const HotelScene = lazy(() => import("@/components/three/HotelScene"));
 
+const CDN = "https://cdn.jsdelivr.net/gh/mvprash4487/Carnivore-Digital@main/public/videos";
+
 const CHAPTERS = [
-  { range: [0.00, 0.17] as [number, number], src: "/videos/01-lobby.mp4"      },
-  { range: [0.17, 0.28] as [number, number], src: "/videos/02-reception.mp4"  },
-  { range: [0.28, 0.42] as [number, number], src: "/videos/03-elev-lobby.mp4" },
-  { range: [0.42, 0.65] as [number, number], src: "/videos/04-elevator.mp4"   },
-  { range: [0.65, 0.82] as [number, number], src: "/videos/05-bulletin.mp4"   },
-  { range: [0.82, 1.00] as [number, number], src: "/videos/06-window.mp4"     },
+  { range: [0.00, 0.17] as [number, number], src: `${CDN}/01-lobby.mp4`      },
+  { range: [0.17, 0.28] as [number, number], src: `${CDN}/02-reception.mp4`  },
+  { range: [0.28, 0.42] as [number, number], src: `${CDN}/03-elev-lobby.mp4` },
+  { range: [0.42, 0.65] as [number, number], src: `${CDN}/04-elevator.mp4`   },
+  { range: [0.65, 0.82] as [number, number], src: `${CDN}/05-bulletin.mp4`   },
+  { range: [0.82, 1.00] as [number, number], src: `${CDN}/06-window.mp4`     },
 ];
 
 function getChapterIndex(scrollProgress: number): number {
