@@ -66,7 +66,7 @@ const ServicesSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 + i * 0.1 }}
-              className="group relative p-8 md:p-10 rounded-lg border border-white/10 bg-black/40 backdrop-blur-sm hover:border-primary/50 hover:bg-black/60 transition-all duration-500"
+              className="group relative p-8 md:p-10 rounded-lg border border-white/10 bg-black/50 hover:border-primary/50 hover:bg-black/65 transition-all duration-500"
             >
               {/* Floor badge */}
               <div className="absolute top-6 right-6 w-10 h-10 rounded-full border-2 border-primary/50 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/15 transition-all duration-300">
