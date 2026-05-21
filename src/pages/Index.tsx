@@ -9,7 +9,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 
-const LiquidGoldScene = lazy(() => import("@/components/three/LiquidGoldScene"));
+const ScrollFacadeBackground = lazy(() => import("@/components/ScrollFacadeBackground"));
 
 const Index = () => {
   return (
