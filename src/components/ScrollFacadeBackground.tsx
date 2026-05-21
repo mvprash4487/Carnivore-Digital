@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-const FRAME_COUNT = 100;
+const FRAME_COUNT = 362;
 const framePath = (i: number) =>
   `/facade/frame_${String(i).padStart(4, "0")}.jpg`;
 
 // Each section eases through a slice of frames. Hold a bit at start/end of
 // each slice so the pan reads as discrete "floor" beats.
-const HOLD = 0.12;
+const HOLD = 0.06;
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
@@ -141,7 +141,7 @@ const ScrollFacadeBackground = () => {
         displayFrameRef.current = 0;
       } else {
         displayFrameRef.current +=
-          (targetFrameRef.current - displayFrameRef.current) * 0.12;
+          (targetFrameRef.current - displayFrameRef.current) * 0.18;
       }
       const rounded = Math.round(displayFrameRef.current);
       if (rounded !== last) {
