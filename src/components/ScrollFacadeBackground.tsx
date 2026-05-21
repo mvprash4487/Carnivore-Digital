@@ -4,10 +4,18 @@ const FRAME_COUNT = 100;
 const framePath = (i: number) =>
   `/facade/frame_${String(i).padStart(4, "0")}.jpg`;
 
+// Each section eases through a slice of frames. Hold a bit at start/end of
+// each slice so the pan reads as discrete "floor" beats.
+const HOLD = 0.12;
+const smoothstep = (t: number) => t * t * (3 - 2 * t);
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
 const ScrollFacadeBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const currentFrameRef = useRef(0);
+  const targetFrameRef = useRef(0);
+  const displayFrameRef = useRef(0);
+  const sectionsRef = useRef<HTMLElement[]>([]);
   const rafRef = useRef(0);
   const [ready, setReady] = useState(false);
 
@@ -21,7 +29,6 @@ const ScrollFacadeBackground = () => {
       img.src = framePath(i);
       img.onload = () => {
         loaded++;
-        // Render first frame as soon as it's available so the bg isn't black
         if (i === 1 && !cancelled) {
           imagesRef.current = imgs;
           draw(0);
@@ -41,7 +48,7 @@ const ScrollFacadeBackground = () => {
 
   const draw = (frameIdx: number) => {
     const canvas = canvasRef.current;
-    const img = imagesRef.current[frameIdx];
+    const img = imagesRef.current[Math.round(frameIdx)];
     if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -57,7 +64,6 @@ const ScrollFacadeBackground = () => {
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // cover-fit
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
     const scale = Math.max(w / iw, h / ih);
@@ -69,41 +75,98 @@ const ScrollFacadeBackground = () => {
     ctx.drawImage(img, dx, dy, dw, dh);
   };
 
-  // Scroll → frame
+  // Compute target frame from section progress
+  const computeTarget = () => {
+    const sections = sectionsRef.current;
+    if (!sections.length) return;
+    const n = sections.length;
+    const sliceSize = (FRAME_COUNT - 1) / n;
+    const centerY = window.innerHeight / 2;
+
+    // Find active section: the one whose [top, bottom] contains center,
+    // else the nearest by midpoint.
+    let activeIdx = 0;
+    let localT = 0;
+    let found = false;
+    for (let i = 0; i < n; i++) {
+      const r = sections[i].getBoundingClientRect();
+      if (r.top <= centerY && r.bottom >= centerY) {
+        activeIdx = i;
+        const span = Math.max(1, r.height);
+        localT = clamp01((centerY - r.top) / span);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      // Above first or below last
+      const firstTop = sections[0].getBoundingClientRect().top;
+      if (firstTop > centerY) {
+        activeIdx = 0;
+        localT = 0;
+      } else {
+        activeIdx = n - 1;
+        localT = 1;
+      }
+    }
+
+    // Hold at start/end of each slice, then ease the middle
+    const held = clamp01((localT - HOLD) / (1 - 2 * HOLD));
+    const eased = smoothstep(held);
+    const sliceStart = activeIdx * sliceSize;
+    const sliceEnd = sliceStart + sliceSize;
+    targetFrameRef.current = sliceStart + (sliceEnd - sliceStart) * eased;
+  };
+
+  // RAF loop: lerp displayed frame toward target, redraw on change
   useEffect(() => {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    const onScroll = () => {
-      const max =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      const target = reduced
-        ? 0
-        : Math.min(FRAME_COUNT - 1, Math.floor(p * (FRAME_COUNT - 1)));
-      if (target === currentFrameRef.current) return;
-      currentFrameRef.current = target;
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(() => draw(target));
+    const collectSections = () => {
+      const root = document.querySelector("main") || document.body;
+      sectionsRef.current = Array.from(
+        root.querySelectorAll<HTMLElement>("section, footer")
+      );
     };
+    collectSections();
+    // Recollect once layout settles (lazy content, fonts)
+    const recollectTimer = window.setTimeout(collectSections, 500);
 
-    const onResize = () => draw(currentFrameRef.current);
+    let last = 0;
+    const loop = () => {
+      computeTarget();
+      if (reduced) {
+        displayFrameRef.current = 0;
+      } else {
+        displayFrameRef.current +=
+          (targetFrameRef.current - displayFrameRef.current) * 0.12;
+      }
+      const rounded = Math.round(displayFrameRef.current);
+      if (rounded !== last) {
+        last = rounded;
+        draw(rounded);
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const onResize = () => {
+      collectSections();
+      draw(Math.round(displayFrameRef.current));
+    };
     window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(recollectTimer);
+      window.removeEventListener("resize", onResize);
     };
   }, [ready]);
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
       <canvas ref={canvasRef} className="block w-full h-full" />
-      {/* Legibility overlay — oxblood vignette + bottom darken */}
       <div
         className="absolute inset-0"
         style={{

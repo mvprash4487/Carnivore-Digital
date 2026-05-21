@@ -1,32 +1,35 @@
-## Plan: Scroll-driven hotel facade background
+## Plan: Section-chunked facade pan
 
-### 1. Generate the video
-- Use `videogen--generate_video` with a detailed prompt for a photoreal cinematic 5-star hotel facade, camera starting at street level and slowly tilting up floor-by-floor to the 11th floor. Warm evening light, shallow haze, subtle people/cars at base, ornate stone + glass facade, balconies, illuminated windows, no text/logos.
-- Settings: 1080p, 9:16 aspect (matches a tall vertical pan and the site's portrait viewport), 10s, `camera_fixed: false`.
-- Save to `/tmp/hotel_facade.mp4`.
+### Goal
+Instead of mapping every scroll pixel to a frame (continuous scrub), divide the 100 frames into one chunk per page section. As the user scrolls a section, the pan eases through that section's frame range, then "rests" briefly between sections so each floor reads as its own beat.
 
-### 2. Extract frames
-- Use ffmpeg to extract ~120 frames evenly across the 10s clip (12 fps), resized to ~720px wide JPEGs (~80 quality) to keep total weight manageable (~3–6 MB).
-- Save to `public/facade/frame_0001.jpg` … `frame_0120.jpg`.
-- QA: spot-check first/middle/last frame to confirm pan covers ground → 11th floor cleanly.
+### Sections (in order, from `Index.tsx`)
+1. Hero
+2. About
+3. Services
+4. Portfolio
+5. Clients
+6. Contact
+7. Footer
 
-### 3. Wire it up as scroll-driven background
-- Create `src/components/ScrollFacadeBackground.tsx`:
-  - Preloads all frames into `Image` objects.
-  - Renders a fixed full-viewport `<canvas>` behind content (z-0, `pointer-events-none`).
-  - On scroll, maps page scroll progress (0 → 1) to frame index and draws the matching frame (cover-fit).
-  - Uses `requestAnimationFrame` throttling; integrates with existing Lenis smooth scroll.
-  - Honors `prefers-reduced-motion` (shows only the first frame).
-- Add a dark gradient overlay on top of the canvas (oxblood → near-black) so existing text stays legible against the photo.
+7 sections → split 100 frames into 7 ranges (~14 frames each, last one to 99).
 
-### 4. Replace the current 3D background
-- In `src/pages/Index.tsx`, swap the lazy `LiquidGoldScene` for `ScrollFacadeBackground`.
-- Leave `LiquidGoldScene.tsx` in the repo (unused) so we can revert easily; remove only if you confirm.
+### Changes
+**`src/components/ScrollFacadeBackground.tsx`**
+- Add IDs (or rely on existing ones) to each `<section>` so the bg component can `querySelectorAll` them on mount. Fallback: query `main > section, footer`.
+- On scroll, for each section measure its top/bottom relative to viewport center. Determine:
+  - which section is "active" (its midpoint is closest to viewport center, or whose range [top, bottom] contains the center line)
+  - local progress `t` within that section (0 → 1)
+- Apply an ease (`smoothstep`) to `t`, then compute frame:
+  `frame = floor(lerp(rangeStart, rangeEnd, eased(t)))`
+- Add a small "hold" at each end: clamp `t` into `[0.1, 0.9]` then remap, so each section starts and ends on a stable frame (the chunked feel).
+- Smooth between scroll events with a single requestAnimationFrame loop that lerps `displayFrame` toward `targetFrame` at ~0.15 per tick, so chunks transition cleanly even with Lenis smooth scroll.
 
-### 5. Verify
-- Load the page, scroll top → bottom, confirm the facade pans smoothly from ground floor to the 11th floor and content remains readable on mobile (390px) and desktop.
+**Index.tsx / sections**
+- Ensure each top-level section is a direct child wrapper the bg can find. If components already render `<section>`, no change needed; otherwise wrap them in `<section data-facade-chunk>` in `Index.tsx`.
 
-### Technical notes
-- Frame-sequence-on-canvas (vs `<video>`) gives perfectly scrubbable, scroll-locked playback on iOS too, where inline `<video>` scrubbing is unreliable.
-- Total payload target ≤ 6 MB; if heavier, drop to 90 frames or 640px width.
-- All assets served from `/public/facade/` — no backend needed.
+### Also "fix the scroll first"
+Interpreting as: the current continuous scrub feels janky / not aligned. The new model fixes both — per-section chunks + RAF-lerped frame index removes pixel-by-pixel jitter and aligns visual beats with content beats.
+
+### Out of scope
+- Regenerating the video for a perfectly vertical parallel pan (user said "let's see if this works" first). If after this they still want a true parallel-axis pan, we re-generate with a stricter prompt.
