@@ -32,8 +32,8 @@ const ClientsSection = () => {
           transition={{ duration: 1 }}
           className="text-center mb-6"
         >
-          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">04 — The Guest Book</p>
-          <h2 className="font-serif text-3xl md:text-5xl font-bold">
+          <p className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-5">04 — The Guest Book</p>
+          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-black text-white text-shadow-hard">
             Distinguished <span className="text-gold-gradient italic">Guests</span>
           </h2>
         </motion.div>
@@ -42,7 +42,7 @@ const ClientsSection = () => {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-center text-muted-foreground font-sans text-sm mb-20 max-w-md mx-auto"
+          className="text-center text-white/65 font-sans text-base md:text-lg mb-20 max-w-md mx-auto"
         >
           Some of the world's most discerning names have checked in.
         </motion.p>
@@ -80,8 +80,8 @@ const ClientsSection = () => {
             { value: "24/7", label: "Concierge Support"   },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="font-serif text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
-              <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mt-2 font-sans">{stat.label}</p>
+              <p className="font-serif text-3xl md:text-4xl font-black text-primary">{stat.value}</p>
+              <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-white/55 mt-2 font-sans">{stat.label}</p>
             </div>
           ))}
         </motion.div>

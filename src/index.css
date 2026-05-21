@@ -5,38 +5,39 @@
 @layer base {
   :root {
     --background: 0 0% 4%;
-    --foreground: 36 38% 90%;
+    --foreground: 36 20% 96%;
 
     --card: 0 30% 10%;
-    --card-foreground: 36 38% 90%;
+    --card-foreground: 36 20% 96%;
 
     --popover: 0 30% 10%;
-    --popover-foreground: 36 38% 90%;
+    --popover-foreground: 36 20% 96%;
 
-    --primary: 16 70% 48%;
+    /* Shifted to true gold/amber */
+    --primary: 38 88% 54%;
     --primary-foreground: 0 0% 6%;
 
     --secondary: 0 25% 14%;
-    --secondary-foreground: 36 38% 90%;
+    --secondary-foreground: 36 20% 96%;
 
     --muted: 0 20% 14%;
-    --muted-foreground: 36 18% 70%;
+    --muted-foreground: 36 15% 78%;
 
-    --accent: 16 70% 48%;
+    --accent: 38 88% 54%;
     --accent-foreground: 0 0% 6%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 25% 18%;
-    --input: 0 25% 18%;
-    --ring: 16 70% 48%;
+    --border: 0 25% 20%;
+    --input: 0 25% 20%;
+    --ring: 38 88% 54%;
 
     --radius: 0.5rem;
 
-    --gold: 16 70% 48%;
-    --gold-light: 22 75% 60%;
-    --gold-dark: 12 55% 32%;
+    --gold: 38 88% 54%;
+    --gold-light: 46 100% 66%;
+    --gold-dark: 28 68% 36%;
     --charcoal: 0 30% 8%;
     --charcoal-light: 0 25% 12%;
   }
@@ -62,19 +63,27 @@
   }
 
   ::selection {
-    background: hsl(16 70% 48% / 0.3);
-    color: hsl(36 38% 90%);
+    background: hsl(38 88% 54% / 0.35);
+    color: #fff;
   }
 }
 
 @layer utilities {
   .text-gold-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(22 75% 60%), hsl(16 70% 48%), hsl(12 55% 32%));
+    background-image: linear-gradient(135deg, hsl(46 100% 68%), hsl(38 88% 54%), hsl(28 65% 38%));
+  }
+
+  /* Strong multi-layer shadow — text readable over any video */
+  .text-shadow-hard {
+    text-shadow:
+      0 2px 8px rgba(0,0,0,1),
+      0 4px 24px rgba(0,0,0,0.95),
+      0 8px 60px rgba(0,0,0,0.85);
   }
 
   .border-gold-glow {
-    box-shadow: 0 0 20px hsl(16 70% 48% / 0.18), inset 0 0 20px hsl(16 70% 48% / 0.06);
+    box-shadow: 0 0 24px hsl(38 88% 54% / 0.22), inset 0 0 24px hsl(38 88% 54% / 0.08);
   }
 
   .glass {
@@ -84,7 +93,7 @@
   }
 
   .glass-strong {
-    background: hsl(0 0% 4% / 0.85);
+    background: hsl(0 0% 4% / 0.88);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
   }

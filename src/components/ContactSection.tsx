@@ -8,29 +8,30 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="py-32 md:py-44 relative" ref={ref}>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, hsl(43 52% 54%) 0%, transparent 70%)" }}
-      />
-
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 1 }}
-          className="text-center max-w-3xl mx-auto"
+          className="text-center max-w-4xl mx-auto"
         >
-          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">05 — The View From Here</p>
-          <h2 className="font-serif text-3xl md:text-6xl font-bold mb-4">
-            Let's Create Something
+          <p className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-6">05 — The View From Here</p>
+
+          <h2 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard leading-[0.92] mb-6">
+            Let's Create
             <br />
-            <span className="text-gold-gradient italic">Extraordinary</span>
+            <span className="text-gold-gradient italic">Something</span>
+            <br />
+            Extraordinary
           </h2>
-          <p className="text-primary/60 font-sans text-xs tracking-[0.2em] uppercase mb-6">
+
+          <p className="text-primary font-sans text-xs sm:text-sm tracking-[0.25em] uppercase font-semibold mb-8">
             The 19th floor awaits. Come up.
           </p>
-          <p className="text-muted-foreground font-sans text-sm md:text-base leading-relaxed mb-12">
-            Ready to elevate your digital presence? We'd love to hear about your project
-            and explore how we can bring your vision to life.
+
+          <p className="text-white/70 font-sans text-base md:text-lg leading-relaxed mb-14 max-w-xl mx-auto">
+            Ready to elevate your digital presence? We'd love to hear about your
+            project and explore how we can bring your vision to life.
           </p>
 
           <motion.a
@@ -38,7 +39,7 @@ const ContactSection = () => {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
             href="mailto:hello@carnivoredigital.com"
-            className="inline-block border-2 border-primary text-primary px-12 py-5 text-xs tracking-[0.3em] uppercase font-sans hover:bg-primary hover:text-primary-foreground transition-all duration-500 mb-16"
+            className="inline-block bg-primary text-primary-foreground px-14 py-6 text-xs sm:text-sm tracking-[0.35em] uppercase font-sans font-bold hover:bg-primary/80 transition-all duration-300 shadow-[0_4px_40px_rgba(0,0,0,0.6)] mb-20"
           >
             Let's Connect
           </motion.a>
@@ -47,20 +48,22 @@ const ContactSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid md:grid-cols-3 gap-8 pt-14 border-t border-border"
+            className="grid md:grid-cols-3 gap-8 pt-14 border-t border-white/15"
           >
-            <div className="flex flex-col items-center gap-3">
-              <Mail className="text-primary" size={20} strokeWidth={1.5} />
-              <p className="text-sm text-muted-foreground font-sans">hello@carnivoredigital.com</p>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <Phone className="text-primary" size={20} strokeWidth={1.5} />
-              <a href="tel:+66842217954" className="text-sm text-muted-foreground font-sans hover:text-primary transition-colors">+66 84 221 7954</a>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <MapPin className="text-primary" size={20} strokeWidth={1.5} />
-              <p className="text-sm text-muted-foreground font-sans">Bangkok, Thailand</p>
-            </div>
+            {[
+              { Icon: Mail,  text: "hello@carnivoredigital.com", href: "mailto:hello@carnivoredigital.com" },
+              { Icon: Phone, text: "+66 84 221 7954",            href: "tel:+66842217954" },
+              { Icon: MapPin,text: "Bangkok, Thailand",          href: undefined },
+            ].map(({ Icon, text, href }) => (
+              <div key={text} className="flex flex-col items-center gap-3">
+                <Icon className="text-primary" size={22} strokeWidth={1.5} />
+                {href ? (
+                  <a href={href} className="text-sm md:text-base text-white/70 font-sans hover:text-primary transition-colors">{text}</a>
+                ) : (
+                  <p className="text-sm md:text-base text-white/70 font-sans">{text}</p>
+                )}
+              </div>
+            ))}
           </motion.div>
         </motion.div>
       </div>

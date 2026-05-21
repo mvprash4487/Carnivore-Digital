@@ -41,7 +41,7 @@ const Navigation = () => {
             <a
               key={link.label}
               href={link.href}
-              className="text-sm tracking-[0.2em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+              className="text-sm tracking-[0.22em] uppercase text-white/70 font-semibold hover:text-primary transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
             >
               {link.label}
             </a>
@@ -72,7 +72,7 @@ const Navigation = () => {
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-sm tracking-[0.2em] uppercase text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm tracking-[0.22em] uppercase text-white/70 font-semibold hover:text-primary transition-colors"
                 >
                   {link.label}
                 </a>
