@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 362;
+const FRAME_START = 0; // 0-indexed (maps to frame_0001.jpg)
+const FRAME_END = 319; // trim pulled-back tail (~frame_0320.jpg)
+const ASSET_VERSION = 3; // bump to bust browser cache when frames are replaced
 const framePath = (i: number) =>
-  `/facade/frame_${String(i).padStart(4, "0")}.jpg`;
+  `/facade/frame_${String(i).padStart(4, "0")}.jpg?v=${ASSET_VERSION}`;
 
-// Each section eases through a slice of frames. Hold a bit at start/end of
-// each slice so the pan reads as discrete "floor" beats.
-const HOLD = 0.06;
+// Transition band: scroll inside the middle of this window between two
+// adjacent section midpoints triggers the pan; outside it the bg holds.
+const BAND_START = 0.4;
+const BAND_END = 0.6;
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const ScrollFacadeBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -75,47 +80,56 @@ const ScrollFacadeBackground = () => {
     ctx.drawImage(img, dx, dy, dw, dh);
   };
 
-  // Compute target frame from section progress
+  // Compute target frame: hold on section anchors, scrub only between them
   const computeTarget = () => {
     const sections = sectionsRef.current;
     if (!sections.length) return;
     const n = sections.length;
-    const sliceSize = (FRAME_COUNT - 1) / n;
     const centerY = window.innerHeight / 2;
 
-    // Find active section: the one whose [top, bottom] contains center,
-    // else the nearest by midpoint.
-    let activeIdx = 0;
-    let localT = 0;
-    let found = false;
-    for (let i = 0; i < n; i++) {
-      const r = sections[i].getBoundingClientRect();
-      if (r.top <= centerY && r.bottom >= centerY) {
-        activeIdx = i;
-        const span = Math.max(1, r.height);
-        localT = clamp01((centerY - r.top) / span);
-        found = true;
+    // Per-section anchor frame
+    const anchor = (i: number) =>
+      n === 1
+        ? FRAME_START
+        : lerp(FRAME_START, FRAME_END, i / (n - 1));
+
+    // Collect section midpoints (in document space via getBoundingClientRect
+    // referenced to the viewport center)
+    const mids = sections.map((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top + r.height / 2;
+    });
+
+    // Above first section
+    if (centerY <= mids[0]) {
+      targetFrameRef.current = anchor(0);
+      return;
+    }
+    // Below last section
+    if (centerY >= mids[n - 1]) {
+      targetFrameRef.current = anchor(n - 1);
+      return;
+    }
+
+    // Find the pair [i, i+1] that brackets the viewport center
+    let i = 0;
+    for (let k = 0; k < n - 1; k++) {
+      if (centerY >= mids[k] && centerY <= mids[k + 1]) {
+        i = k;
         break;
       }
     }
-    if (!found) {
-      // Above first or below last
-      const firstTop = sections[0].getBoundingClientRect().top;
-      if (firstTop > centerY) {
-        activeIdx = 0;
-        localT = 0;
-      } else {
-        activeIdx = n - 1;
-        localT = 1;
-      }
-    }
+    const span = Math.max(1, mids[i + 1] - mids[i]);
+    const t = clamp01((centerY - mids[i]) / span);
 
-    // Hold at start/end of each slice, then ease the middle
-    const held = clamp01((localT - HOLD) / (1 - 2 * HOLD));
-    const eased = smoothstep(held);
-    const sliceStart = activeIdx * sliceSize;
-    const sliceEnd = sliceStart + sliceSize;
-    targetFrameRef.current = sliceStart + (sliceEnd - sliceStart) * eased;
+    // Hold outside the band, scrub inside
+    let bandT: number;
+    if (t <= BAND_START) bandT = 0;
+    else if (t >= BAND_END) bandT = 1;
+    else bandT = (t - BAND_START) / (BAND_END - BAND_START);
+
+    const eased = smoothstep(bandT);
+    targetFrameRef.current = lerp(anchor(i), anchor(i + 1), eased);
   };
 
   // RAF loop: lerp displayed frame toward target, redraw on change

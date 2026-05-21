@@ -1,25 +1,30 @@
-## Plan: Regenerate with straight-up 90° pan + 360 frames
+## Plan: Fix hero, trim tail, switch to transition-only scrubbing
 
-### 1. Regenerate the video
-- Call `videogen--generate_video` with a tighter prompt: modern 5-star hotel facade, **locked vertical tilt-up only, 90° straight upward camera move, no horizontal drift, no zoom, no roll**, starting at the ground-floor entrance and ending framed on the 11th-floor crown. Modern (not ornate) architecture — clean stone + floor-to-ceiling glass, brushed bronze fins, soft warm interior glow, dusk sky.
-- Settings: 1080p, 9:16, 10s, `camera_fixed: false` (camera must move up).
-- Save to `/tmp/hotel_facade_v2.mp4`. Spot-check first/middle/last frame to confirm it's a pure vertical pan before committing.
-- If the model adds horizontal drift, retry with even stricter wording ("locked tripod tilt, axis purely vertical").
+### 1. Fix stale hero (old facade visible)
+- Cause: we overwrote `frame_0001.jpg` etc. with the same names, so the browser is serving cached frames from the previous video.
+- Fix: append a cache-busting query string to `framePath`, e.g. `?v=3`. Bump the version every time we regenerate frames.
 
-### 2. Re-extract to ~360 frames
-- Delete `public/facade/*.jpg`.
-- Use ffmpeg: `fps=36, scale=480:-2` → ~360 WebP frames (better compression than JPEG, ~50–60% smaller at same quality).
-  `ffmpeg -i ... -vf "fps=36,scale=480:-2" -q:v 70 public/facade/frame_%04d.webp`
-- Target total payload ≤ 12 MB. If still heavy, drop to 320 frames @ 440px.
+### 2. Tighten the tail
+- The v3 video starts tight on the entrance (good) but the final ~1 second pulls back to show the whole building. Cap the usable frame range so the pan ends on a clean upper-facade frame.
+- Implementation: introduce `FRAME_END = 320` (out of 362) and use that as the upper bound when computing slice ranges. We keep all 362 files on disk in case we want to adjust, but only frames 1–320 are used.
 
-### 3. Update the bg component
-- Change `FRAME_COUNT` to actual count and `framePath` to `.webp`.
-- Bump RAF lerp factor from `0.12` → `~0.18` so a much denser frame array catches up faster (otherwise chunked moves feel laggy with 3.6× more frames).
-- Slightly reduce `HOLD` from `0.12` → `0.06` so most of each section is spent moving (since each section now gets ~51 frames, there's room to actually pan instead of holding).
+### 3. New scroll model: hold during section, scrub between sections
+Replace the current "progress within a section drives the frame" with:
+- **Per-section anchor frames.** Each of the N sections has a fixed target frame:
+  `anchor[i] = lerp(FRAME_START, FRAME_END, i / (N - 1))`.
+  When section i is the "active" section (its midpoint nearest viewport center), the bg sits at `anchor[i]` — completely still.
+- **Inter-section transition zone.** Define a transition window equal to the last ~25% of one section and the first ~25% of the next. Inside that window, scrub from `anchor[i]` to `anchor[i+1]` using an eased local progress. Outside the window, hold.
+- Mechanically:
+  - For each frame, find the two nearest section midpoints (`mPrev`, `mNext`) around viewport center.
+  - `t = (centerY - mPrev) / (mNext - mPrev)` clamped to [0, 1].
+  - Define a transition band, e.g. start scrub when `t > 0.4`, finish when `t > 0.6`. Remap `t` into [0,1] only inside that band; outside, snap to 0 or 1.
+  - Apply `smoothstep`, then `frame = lerp(anchor[prevIdx], anchor[nextIdx], eased)`.
+- Keep the RAF lerp (0.18) so the snap from "holding" into "scrubbing" still feels smooth, not a hard step.
 
 ### 4. Verify
-- Page should: each section panning ~5 floors of facade with no lateral drift; transitions between sections smooth; no visible frame popping on mobile (390px) or desktop.
+- Hero shows the new entrance frame on load (no cached old facade).
+- Scrolling through About / Services / etc.: background freezes during the body of each section, then visibly pans up only as you cross into the next.
+- Final section ends on a clean upper-floor frame, not a pulled-back wide.
 
-### Notes
-- WebP is supported by all modern browsers Lovable previews target.
-- If video gen still produces a slow/short pan that doesn't reach the 11th floor, we'll re-run once more rather than fake it with frame remapping.
+### Out of scope
+- Re-generating the video again. We'll see if cropping the frame range + the new hold/scrub model gets it where you want it. If the still-visible pull-back at frame ~340 bothers you after this, we can re-gen.
