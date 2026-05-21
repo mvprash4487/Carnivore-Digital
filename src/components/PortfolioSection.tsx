@@ -8,12 +8,12 @@ import wineGlasses from "@/assets/wine-glasses.jpg";
 import burgerLobster from "@/assets/burger-lobster.jpg";
 
 const projects = [
-  { title: "Ocean Marina", category: "Branding & Web", image: wineGlasses },
-  { title: "Thara Thong", category: "Photography & Design", image: truffle },
-  { title: "Burger & Lobster", category: "Digital Marketing", image: lobster },
-  { title: "Canolini", category: "Brand Identity", image: burgerChef },
-  { title: "ROSH", category: "UX/UI Design", image: chefPlating },
-  { title: "Aspira", category: "Web & SEO", image: burgerLobster },
+  { suite: "Suite 01", title: "Ocean Marina",     category: "Branding & Web",      image: wineGlasses   },
+  { suite: "Suite 02", title: "Thara Thong",      category: "Photography & Design", image: truffle       },
+  { suite: "Suite 03", title: "Burger & Lobster", category: "Digital Marketing",    image: lobster       },
+  { suite: "Suite 04", title: "Canolini",         category: "Brand Identity",       image: burgerChef    },
+  { suite: "Suite 05", title: "ROSH",             category: "UX/UI Design",         image: chefPlating   },
+  { suite: "Suite 06", title: "Aspira",           category: "Web & SEO",            image: burgerLobster },
 ];
 
 const PortfolioSection = () => {
@@ -29,9 +29,9 @@ const PortfolioSection = () => {
           transition={{ duration: 1 }}
           className="mb-20"
         >
-          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">03 — Selected Work</p>
+          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">03 — The Penthouse Collection</p>
           <h2 className="font-serif text-3xl md:text-5xl font-bold">
-            Our <span className="text-gold-gradient italic">Portfolio</span>
+            Our Most Coveted <span className="text-gold-gradient italic">Suites</span>
           </h2>
         </motion.div>
 
@@ -55,7 +55,8 @@ const PortfolioSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent group-hover:from-background/80 transition-all duration-500" />
               <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
                 <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <p className="text-xs tracking-[0.3em] uppercase text-primary/80 font-sans mb-2">{project.category}</p>
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-primary/60 font-sans mb-1">{project.suite}</p>
+                  <p className="text-xs tracking-[0.2em] uppercase text-primary/80 font-sans mb-2">{project.category}</p>
                   <h3 className="font-serif text-xl md:text-2xl font-bold text-foreground">{project.title}</h3>
                 </div>
                 <div className="h-[1px] bg-primary/0 group-hover:bg-primary/50 transition-all duration-500 mt-4" />

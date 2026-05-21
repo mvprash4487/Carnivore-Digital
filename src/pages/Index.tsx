@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -8,15 +7,12 @@ import ClientsSection from "@/components/ClientsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
-
-const ForgeBackground = lazy(() => import("@/components/ForgeBackground"));
+import VideoBackground from "@/components/VideoBackground";
 
 const Index = () => {
   return (
     <SmoothScroll>
-      <Suspense fallback={null}>
-        <ForgeBackground />
-      </Suspense>
+      <VideoBackground />
       <div className="relative z-10 text-foreground min-h-screen">
         <Navigation />
         <HeroSection />

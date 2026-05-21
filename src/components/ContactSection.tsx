@@ -8,7 +8,6 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="py-32 md:py-44 relative" ref={ref}>
-      {/* Gold glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-[0.03]"
         style={{ background: "radial-gradient(circle, hsl(43 52% 54%) 0%, transparent 70%)" }}
       />
@@ -20,14 +19,17 @@ const ContactSection = () => {
           transition={{ duration: 1 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">05 — Get In Touch</p>
-          <h2 className="font-serif text-3xl md:text-6xl font-bold mb-6">
+          <p className="text-xs tracking-[0.4em] uppercase text-primary font-sans mb-4">05 — The View From Here</p>
+          <h2 className="font-serif text-3xl md:text-6xl font-bold mb-4">
             Let's Create Something
             <br />
             <span className="text-gold-gradient italic">Extraordinary</span>
           </h2>
+          <p className="text-primary/60 font-sans text-xs tracking-[0.2em] uppercase mb-6">
+            The 19th floor awaits. Come up.
+          </p>
           <p className="text-muted-foreground font-sans text-sm md:text-base leading-relaxed mb-12">
-            Ready to elevate your digital presence? We'd love to hear about your project 
+            Ready to elevate your digital presence? We'd love to hear about your project
             and explore how we can bring your vision to life.
           </p>
 
@@ -41,7 +43,6 @@ const ContactSection = () => {
             Let's Connect
           </motion.a>
 
-          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
