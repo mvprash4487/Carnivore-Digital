@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 362;
-const FRAME_START = 1;
-const FRAME_END = 320; // trim pulled-back tail
+const FRAME_START = 0; // 0-indexed (maps to frame_0001.jpg)
+const FRAME_END = 319; // trim pulled-back tail (~frame_0320.jpg)
 const ASSET_VERSION = 3; // bump to bust browser cache when frames are replaced
 const framePath = (i: number) =>
   `/facade/frame_${String(i).padStart(4, "0")}.jpg?v=${ASSET_VERSION}`;
