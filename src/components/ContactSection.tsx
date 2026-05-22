@@ -1,71 +1,125 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
+import SplitTextReveal from "@/components/motion/SplitTextReveal";
+import MagneticButton from "@/components/motion/MagneticButton";
+import GlowOrb from "@/components/motion/GlowOrb";
+
+const contactItems = [
+  { Icon: Mail,   text: "hello@carnivoredigital.com", href: "mailto:hello@carnivoredigital.com" },
+  { Icon: Phone,  text: "+66 84 221 7954",            href: "tel:+66842217954" },
+  { Icon: MapPin, text: "Bangkok, Thailand",           href: undefined },
+];
 
 const ContactSection = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="contact" className="py-32 md:py-44 relative" ref={ref}>
+    <section id="contact" className="py-32 md:py-44 relative overflow-hidden" ref={ref}>
+      <GlowOrb size={600} opacity={0.05} blur={120} x="50%" y="45%" animationDuration={10} />
+
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1 }}
-          className="text-center max-w-4xl mx-auto"
-        >
-          <p className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-6">05 — The View From Here</p>
-
-          <h2 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard leading-[0.92] mb-6">
-            Let's Create
-            <br />
-            <span className="text-gold-gradient italic">Something</span>
-            <br />
-            Extraordinary
-          </h2>
-
-          <p className="text-primary font-sans text-xs sm:text-sm tracking-[0.25em] uppercase font-semibold mb-8">
-            The 19th floor awaits. Come up.
-          </p>
-
-          <p className="text-white/70 font-sans text-base md:text-lg leading-relaxed mb-14 max-w-xl mx-auto">
-            Ready to elevate your digital presence? We'd love to hear about your
-            project and explore how we can bring your vision to life.
-          </p>
-
-          <motion.a
+        <div className="text-center max-w-4xl mx-auto">
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            href="mailto:hello@carnivoredigital.com"
-            className="inline-block bg-primary text-primary-foreground px-14 py-6 text-xs sm:text-sm tracking-[0.35em] uppercase font-sans font-bold hover:bg-primary/80 transition-all duration-300 shadow-[0_4px_40px_rgba(0,0,0,0.6)] mb-20"
+            transition={{ duration: 0.8 }}
+            className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-6"
           >
-            Let's Connect
-          </motion.a>
+            05 — The View From Here
+          </motion.p>
+
+          <div className="mb-6 leading-[0.92]">
+            <SplitTextReveal
+              text="Let's Create"
+              tag="h2"
+              className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard block"
+              delay={0}
+              staggerDelay={0.05}
+              duration={0.8}
+            />
+            <SplitTextReveal
+              text="Something"
+              tag="h2"
+              className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gold-gradient italic block"
+              delay={0.35}
+              staggerDelay={0.05}
+              duration={0.8}
+            />
+            <SplitTextReveal
+              text="Extraordinary"
+              tag="h2"
+              className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard block"
+              delay={0.6}
+              staggerDelay={0.05}
+              duration={0.8}
+            />
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-primary font-sans text-xs sm:text-sm tracking-[0.25em] uppercase font-semibold mb-8"
+          >
+            The 19th floor awaits. Come up.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-white/70 font-sans text-base md:text-lg leading-relaxed mb-14 max-w-xl mx-auto"
+          >
+            Ready to elevate your digital presence? We'd love to hear about your
+            project and explore how we can bring your vision to life.
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="mb-20"
+          >
+            <MagneticButton threshold={120} strength={0.6}>
+              <a
+                href="mailto:hello@carnivoredigital.com"
+                data-cursor-hover
+                className="inline-block bg-primary text-primary-foreground px-14 py-6 text-xs sm:text-sm tracking-[0.35em] uppercase font-sans font-bold hover:bg-primary/80 transition-all duration-300 shadow-[0_4px_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+              >
+                <span className="relative z-10">Let's Connect</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              </a>
+            </MagneticButton>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.9 }}
             className="grid md:grid-cols-3 gap-8 pt-14 border-t border-white/15"
           >
-            {[
-              { Icon: Mail,  text: "hello@carnivoredigital.com", href: "mailto:hello@carnivoredigital.com" },
-              { Icon: Phone, text: "+66 84 221 7954",            href: "tel:+66842217954" },
-              { Icon: MapPin,text: "Bangkok, Thailand",          href: undefined },
-            ].map(({ Icon, text, href }) => (
-              <div key={text} className="flex flex-col items-center gap-3">
-                <Icon className="text-primary" size={22} strokeWidth={1.5} />
+            {contactItems.map(({ Icon, text, href }, i) => (
+              <motion.div
+                key={text}
+                className="flex flex-col items-center gap-3"
+                initial={{ opacity: 0, rotateX: 30 }}
+                animate={inView ? { opacity: 1, rotateX: 0 } : {}}
+                transition={{ duration: 0.7, delay: 1.0 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <motion.div whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.4 }}>
+                  <Icon className="text-primary" size={22} strokeWidth={1.5} />
+                </motion.div>
                 {href ? (
                   <a href={href} className="text-sm md:text-base text-white/70 font-sans hover:text-primary transition-colors">{text}</a>
                 ) : (
                   <p className="text-sm md:text-base text-white/70 font-sans">{text}</p>
                 )}
-              </div>
+              </motion.div>
             ))}
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
