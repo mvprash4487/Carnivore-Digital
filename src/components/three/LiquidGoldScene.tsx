@@ -3,20 +3,36 @@ import { Suspense, useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
 import { EffectComposer, Bloom, ChromaticAberration } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
+import { lenisInstance } from "@/components/SmoothScroll";
 
 /* ─── scroll progress (raw + smoothed) ─── */
 const rawScrollRef = { current: 0 };
 const smoothScrollRef = { current: 0 };
 const useScrollProgressInit = () => {
   useEffect(() => {
-    const onScroll = () => {
+    const onLenisScroll = ({ scroll }: { scroll: number }) => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      rawScrollRef.current = h > 0 ? scroll / h : 0;
+    };
+    const onWindowScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
       rawScrollRef.current = h > 0 ? window.scrollY / h : 0;
     };
-    onScroll();
-    smoothScrollRef.current = rawScrollRef.current;
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // Prefer Lenis, fall back to window scroll
+    if (lenisInstance) {
+      lenisInstance.on("scroll", onLenisScroll);
+    } else {
+      window.addEventListener("scroll", onWindowScroll, { passive: true });
+    }
+    rawScrollRef.current = 0;
+    smoothScrollRef.current = 0;
+    return () => {
+      if (lenisInstance) {
+        lenisInstance.off("scroll", onLenisScroll);
+      } else {
+        window.removeEventListener("scroll", onWindowScroll);
+      }
+    };
   }, []);
 };
 
@@ -25,7 +41,7 @@ const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const range = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
-/* ─── ScrollSmoother — runs first each frame, single source of truth ─── */
+/* ─── ScrollSmoother — runs first each frame ─── */
 const ScrollSmoother = () => {
   useFrame(() => {
     smoothScrollRef.current += (rawScrollRef.current - smoothScrollRef.current) * 0.08;
@@ -33,7 +49,7 @@ const ScrollSmoother = () => {
   return null;
 };
 
-/* ─── Burgundy smoke shader ─── */
+/* ─── Burgundy smoke shader — transparent composite version ─── */
 const smokeVert = /* glsl */ `
   varying vec2 vUv;
   void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
@@ -45,8 +61,8 @@ const smokeFrag = /* glsl */ `
   uniform float uTime;
   uniform float uScroll;
   uniform vec2  uRes;
-  uniform vec3  uTone;   // oxblood
-  uniform vec3  uHi;     // brass highlight
+  uniform vec3  uTone;
+  uniform vec3  uHi;
 
   float hash(vec3 p){ p = fract(p*0.3183099+vec3(0.71,0.113,0.419));
     p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
@@ -76,22 +92,23 @@ const smokeFrag = /* glsl */ `
     float core = exp(-d * (3.4 - sin(uTime*0.5)*0.12));
     float halo = exp(-d * 1.05) * 0.4;
 
-    // wine base + brass highlights inside the smoke
     vec3 col = uTone * core * (0.5 + 0.5*n)
              + uHi   * core * 0.18 * n
              + uTone * halo * (0.25 + 0.55*n)
              + uTone * 0.04 * n;
 
-    // dawn horizon
     float dawn = smoothstep(0.85, 1.0, uScroll);
     float horizon = smoothstep(0.18, 0.0, abs(uv.y - 0.18)) * smoothstep(0.0,0.4,uv.y);
     col += uHi * horizon * dawn * 0.7;
 
-    // drift chapter — extra wine wash
     float drift = smoothstep(0.18,0.40,uScroll) * (1.0 - smoothstep(0.55,0.75,uScroll));
     col += uTone * 0.10 * drift * fbm(q*2.4 + vec3(0.0,uTime*0.25,0.0));
 
-    gl_FragColor = vec4(col, 1.0);
+    // Composite over video: use smoke density as alpha
+    float density = core * (0.5 + 0.5*n) + halo * (0.25 + 0.55*n) * 0.4;
+    float alpha = clamp(density * 2.2, 0.0, 0.82);
+
+    gl_FragColor = vec4(col, alpha);
   }
 `;
 
@@ -116,6 +133,7 @@ const SmokeBackground = () => {
         vertexShader={smokeVert}
         fragmentShader={smokeFrag}
         uniforms={uniforms}
+        transparent
         depthTest={false}
         depthWrite={false}
         toneMapped={false}
@@ -124,7 +142,7 @@ const SmokeBackground = () => {
   );
 };
 
-/* ─── Sparks — edge-fade so wraps are invisible ─── */
+/* ─── Sparks ─── */
 const Sparks = ({ count }: { count: number }) => {
   const { positions, seeds } = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -162,14 +180,11 @@ const Sparks = ({ count }: { count: number }) => {
       p.x += sin(t*1.1 + p.y*0.6) * 1.4;
       p.y += cos(t*0.9 + p.z*0.5) * 1.1 + uScroll * 1.5;
       p.z += sin(t*1.3 + p.x*0.4) * 1.2;
-      // unwrapped — fade by distance from bowl center, no teleports
       float dist = length(p) / 14.0;
       float edge = 1.0 - smoothstep(0.7, 1.05, dist);
-
       vec4 mv = modelViewMatrix * vec4(p, 1.0);
       gl_Position = projectionMatrix * mv;
       gl_PointSize = uSize * (1.0 / -mv.z);
-
       float chapter = smoothstep(0.16,0.38,uScroll)
                     * (1.0 - smoothstep(0.78,0.92,uScroll));
       vAlpha = chapter * edge * (0.4 + 0.6 * fract(aSeed*0.137));
@@ -206,7 +221,7 @@ const Sparks = ({ count }: { count: number }) => {
   );
 };
 
-/* ─── Forge — wine-lacquer chrome knot, scale-driven visibility ─── */
+/* ─── Knot ─── */
 const Knot = ({ isMobile }: { isMobile: boolean }) => {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame((state) => {
@@ -234,7 +249,7 @@ const Knot = ({ isMobile }: { isMobile: boolean }) => {
   );
 };
 
-/* ─── Lattice — edge-fade flow, no hard mod snap ─── */
+/* ─── Lattice ─── */
 const Lattice = ({ count }: { count: number }) => {
   const ref = useRef<THREE.InstancedMesh>(null!);
   const matRef = useRef<THREE.LineBasicMaterial>(null!);
@@ -261,13 +276,11 @@ const Lattice = ({ count }: { count: number }) => {
 
     for (let i = 0; i < count; i++) {
       const s = seeds[i];
-      // wrap the position offset, but fade the cell as it nears the wrap edges
       const raw = (s.z0 + flow) % 60;
       const z = raw - 30;
-      // cell-level edge fade: invisible at front (-30) and back (+30)
       const edge = Math.min(
-        smooth(clamp01((z + 30) / 6)),     // fade in from far
-        smooth(clamp01((30 - z) / 6))      // fade out near camera
+        smooth(clamp01((z + 30) / 6)),
+        smooth(clamp01((30 - z) / 6))
       );
       dummy.position.set(s.x, s.y, z);
       dummy.rotation.set(s.r, s.r * 0.7, 0);
@@ -310,11 +323,10 @@ const CameraRig = () => {
   return null;
 };
 
-/* ─── Scene root ─── */
+/* ─── Scene root — no background color, fully transparent ─── */
 const Scene = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <>
-      <color attach="background" args={["#0A0506"]} />
       <ambientLight intensity={0.10} />
       <directionalLight position={[3, 4, 5]} intensity={1.3} color="#E08A52" />
       <pointLight position={[-3, -2, 2]} intensity={0.7} color="#8A1F2E" />
@@ -336,6 +348,7 @@ const LiquidGoldScene = () => {
   const [enabled, setEnabled] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [scrollPast, setScrollPast] = useState(false);
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -345,21 +358,42 @@ const LiquidGoldScene = () => {
     window.addEventListener("resize", onResize);
     const onVis = () => setVisible(!document.hidden);
     document.addEventListener("visibilitychange", onVis);
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      const p = h > 0 ? window.scrollY / h : 0;
+      setScrollPast(p > 0.22);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
   if (!enabled) return null;
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
+    <div
+      className="fixed inset-0 z-[1] pointer-events-none"
+      style={{
+        opacity: scrollPast ? 0 : 1,
+        transition: "opacity 0.5s ease-out",
+      }}
+    >
       <Canvas
         dpr={isMobile ? [1, 1] : [1, 1.5]}
-        frameloop={visible ? "always" : "never"}
+        frameloop={visible && !scrollPast ? "always" : "never"}
         camera={{ position: [0, 0, 6], fov: 55 }}
-        gl={{ antialias: !isMobile, alpha: false, powerPreference: "high-performance", stencil: false, depth: true }}
+        gl={{
+          antialias: !isMobile,
+          alpha: true,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true,
+          premultipliedAlpha: false,
+        }}
+        style={{ background: "transparent" }}
       >
         <Suspense fallback={null}>
           <Scene isMobile={isMobile} />

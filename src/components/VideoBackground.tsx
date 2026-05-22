@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 const CDN = "https://cdn.jsdelivr.net/gh/mvprash4487/Carnivore-Digital@main/public/videos";
 
 const CHAPTERS = [
-  { range: [0.00, 0.17] as [number, number], src: `${CDN}/01-lobby.mp4`      },
-  { range: [0.17, 0.28] as [number, number], src: `${CDN}/02-reception.mp4`  },
-  { range: [0.28, 0.42] as [number, number], src: `${CDN}/03-elev-lobby.mp4` },
-  { range: [0.42, 0.65] as [number, number], src: `${CDN}/04-elevator.mp4`   },
-  { range: [0.65, 0.82] as [number, number], src: `${CDN}/05-bulletin.mp4`   },
-  { range: [0.82, 1.00] as [number, number], src: `${CDN}/06-window.mp4`     },
+  { range: [0.00, 0.17] as [number, number], src: `${CDN}/01-descent.mp4`     },
+  { range: [0.17, 0.28] as [number, number], src: `${CDN}/02-street.mp4`      },
+  { range: [0.28, 0.42] as [number, number], src: `${CDN}/03-chinatown.mp4`   },
+  { range: [0.42, 0.65] as [number, number], src: `${CDN}/04-neon.mp4`        },
+  { range: [0.65, 0.82] as [number, number], src: `${CDN}/05-nightmarket.mp4` },
+  { range: [0.82, 1.00] as [number, number], src: `${CDN}/06-skyline.mp4`     },
 ];
 
 function getChapterIndex(p: number): number {

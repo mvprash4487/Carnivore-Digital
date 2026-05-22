@@ -6,9 +6,9 @@ import GlowOrb from "@/components/motion/GlowOrb";
 import { ParallaxLayer } from "@/components/motion/ParallaxSection";
 
 const stats = [
-  { number: "2015", label: "Checked In" },
-  { number: "150+", label: "Projects" },
-  { number: "50+",  label: "Guests Served" },
+  { number: "2015", label: "On the Street" },
+  { number: "150+", label: "Projects Run"  },
+  { number: "50+",  label: "Brands Fed"   },
 ];
 
 const AboutSection = () => {
@@ -45,7 +45,7 @@ const AboutSection = () => {
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 style={{ originX: 0, width: 64 }}
               />
-              <p className="text-xs sm:text-sm tracking-[0.35em] uppercase text-primary font-sans font-semibold">At the Desk</p>
+              <p className="text-xs sm:text-sm tracking-[0.25em] uppercase text-primary font-sans font-medium">On the Ground</p>
             </div>
           </motion.div>
 
@@ -57,26 +57,25 @@ const AboutSection = () => {
             className="md:col-span-8"
           >
             <SplitTextReveal
-              text="Checked In Since 2015."
+              text="Running Since 2015."
               tag="h2"
               className="font-serif text-4xl sm:text-5xl md:text-6xl font-black leading-[1.0] mb-2 text-white text-shadow-hard"
               delay={0.2}
               staggerDelay={0.025}
             />
             <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-black leading-[1.0] mb-8">
-              <span className="text-gold-gradient italic">Still Taking Reservations.</span>
+              <span className="text-gold-gradient italic">Still Hungry.</span>
             </h2>
 
-            <div className="space-y-5 font-sans leading-[1.85] text-base md:text-lg text-white/80">
+            <div className="space-y-5 font-sans leading-[1.85] text-sm md:text-base text-white/65">
               <p>
                 Carnivore Digital is a full-service digital agency based in Bangkok, Thailand.
-                Consider us your concierge — we handle every detail of your digital presence
-                so you can focus on running your brand.
+                We move fast, we move smart, and we don't stop until the work hits.
               </p>
               <p>
-                Our team of designers, developers, and strategists work in lockstep to deliver
-                solutions that don't just look beautiful — they perform. From brand identity to
-                digital marketing, every floor of our hotel is a specialty.
+                Designers, developers, and strategists in lockstep — delivering work that
+                doesn't just look sharp, it performs. Every discipline under one roof,
+                every project treated like it's the most important one on the street.
               </p>
             </div>
 

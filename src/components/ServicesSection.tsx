@@ -6,34 +6,34 @@ import SplitTextReveal from "@/components/motion/SplitTextReveal";
 
 const services = [
   {
-    floor: "F1",
+    floor: "01",
     icon: Palette,
     title: "UX / UI Design",
-    description: "Creating intuitive, visually stunning interfaces that captivate users and drive engagement through thoughtful design decisions.",
+    description: "Interfaces that stop the scroll. Built for humans, sharpened by data, designed to convert.",
   },
   {
-    floor: "F2",
+    floor: "02",
     icon: TrendingUp,
     title: "Digital Marketing",
-    description: "Data-driven marketing strategies that amplify your brand reach and convert audiences into loyal customers.",
+    description: "We put your brand in front of the right people and make them act. Data-driven, street-smart.",
   },
   {
-    floor: "F3",
+    floor: "03",
     icon: Camera,
     title: "Photo & Video",
-    description: "Cinematic visual content that tells your brand story with impact — from product photography to brand films.",
+    description: "Visual content with bite. Product photography to brand films — we make people stop and look.",
   },
   {
-    floor: "F4",
+    floor: "04",
     icon: Layers,
     title: "Branding",
-    description: "Crafting distinctive brand identities that resonate with your audience and stand the test of time.",
+    description: "Identity built to outlast the competition. Sharp, distinctive, and impossible to ignore.",
   },
   {
-    floor: "F5",
+    floor: "05",
     icon: Globe,
     title: "Web Design & SEO",
-    description: "High-performance websites optimized for search engines, built to convert visitors into customers.",
+    description: "Fast sites, ranked high, built to close. Your digital presence working as hard as you do.",
   },
 ];
 
@@ -67,12 +67,12 @@ const ServicesSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={headInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-5"
+            className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-5"
           >
-            02 — Select Your Floor
+            02 — What We Do
           </motion.p>
           <SplitTextReveal
-            text="Every Floor, A Specialty"
+            text="Five Disciplines. One Team."
             tag="h2"
             className="font-serif text-4xl sm:text-5xl md:text-6xl font-black text-white text-shadow-hard mb-5"
             delay={0.1}
@@ -84,7 +84,7 @@ const ServicesSection = () => {
             transition={{ duration: 1, delay: 0.6 }}
             className="text-white/65 font-sans text-base md:text-lg max-w-md mx-auto"
           >
-            Press your button. Each floor is fully staffed and ready.
+            Pick your weapon. We've sharpened every one of them.
           </motion.p>
         </div>
 
@@ -109,7 +109,7 @@ const ServicesSection = () => {
                     whileHover={{ scale: 1.2, rotate: 10 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <span className="text-[11px] tracking-wider text-primary font-sans font-bold">{service.floor}</span>
+                    <span className="text-[10px] tracking-[0.15em] text-primary font-sans font-semibold">{service.floor}</span>
                   </motion.div>
 
                   <motion.div

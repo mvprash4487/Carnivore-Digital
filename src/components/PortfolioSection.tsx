@@ -10,12 +10,12 @@ import TiltCard3D from "@/components/motion/TiltCard3D";
 import SplitTextReveal from "@/components/motion/SplitTextReveal";
 
 const projects = [
-  { suite: "Suite 01", title: "Ocean Marina",     category: "Branding & Web",       image: wineGlasses   },
-  { suite: "Suite 02", title: "Thara Thong",      category: "Photography & Design",  image: truffle       },
-  { suite: "Suite 03", title: "Burger & Lobster", category: "Digital Marketing",     image: lobster       },
-  { suite: "Suite 04", title: "Canolini",         category: "Brand Identity",        image: burgerChef    },
-  { suite: "Suite 05", title: "ROSH",             category: "UX/UI Design",          image: chefPlating   },
-  { suite: "Suite 06", title: "Aspira",           category: "Web & SEO",             image: burgerLobster },
+  { suite: "Case 01", title: "Ocean Marina",     category: "Branding & Web",       image: wineGlasses   },
+  { suite: "Case 02", title: "Thara Thong",      category: "Photography & Design",  image: truffle       },
+  { suite: "Case 03", title: "Burger & Lobster", category: "Digital Marketing",     image: lobster       },
+  { suite: "Case 04", title: "Canolini",         category: "Brand Identity",        image: burgerChef    },
+  { suite: "Case 05", title: "ROSH",             category: "UX/UI Design",          image: chefPlating   },
+  { suite: "Case 06", title: "Aspira",           category: "Web & SEO",             image: burgerLobster },
 ];
 
 const cardVariants = {
@@ -47,12 +47,12 @@ const PortfolioSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={headInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-5"
+            className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-5"
           >
-            03 — The Penthouse Collection
+            03 — The Work
           </motion.p>
           <SplitTextReveal
-            text="Our Most Coveted Suites"
+            text="Campaigns That Landed"
             tag="h2"
             className="font-serif text-4xl sm:text-5xl md:text-6xl font-black text-white text-shadow-hard"
             delay={0.1}
@@ -97,7 +97,7 @@ const PortfolioSection = () => {
                       whileHover={{ y: 0, opacity: 1 }}
                       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      <p className="text-[10px] tracking-[0.35em] uppercase text-primary/70 font-sans font-semibold mb-1">{project.suite}</p>
+                      <p className="text-[10px] tracking-[0.25em] uppercase text-primary/70 font-sans font-medium mb-1">{project.suite}</p>
                       <p className="text-xs tracking-[0.25em] uppercase text-white/60 font-sans mb-2">{project.category}</p>
                       <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-black text-white">{project.title}</h3>
                     </motion.div>

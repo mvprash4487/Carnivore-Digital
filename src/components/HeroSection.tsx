@@ -37,7 +37,7 @@ const HeroSection = () => {
         <motion.div variants={heroContainer} initial="hidden" animate="visible">
           <motion.p
             variants={heroItem}
-            className="text-primary text-xs sm:text-sm md:text-base tracking-[0.55em] uppercase mb-6 font-sans font-semibold text-shadow-hard"
+            className="text-primary text-xs sm:text-sm md:text-base tracking-[0.35em] uppercase mb-6 font-sans font-medium text-shadow-hard"
           >
             Bangkok's Premier Digital Studio
           </motion.p>
@@ -75,16 +75,16 @@ const HeroSection = () => {
 
           <motion.p
             variants={heroItem}
-            className="text-white/85 max-w-xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-3 font-sans text-shadow-hard"
+            className="text-white/70 max-w-xl mx-auto text-sm sm:text-base md:text-lg leading-relaxed mb-3 font-sans text-shadow-hard"
           >
-            Step inside. The world's most discerning brands check in here.
+            This city runs 24/7. So do we.
           </motion.p>
 
           <motion.p
             variants={heroItem}
             className="text-white/55 max-w-lg mx-auto text-sm md:text-base leading-relaxed mb-12 font-sans text-shadow-hard"
           >
-            Strategy, design, and technology — fused into something extraordinary.
+            Strategy, design, and technology. Built for brands that refuse to stand still.
           </motion.p>
 
           <motion.div variants={heroItem}>
@@ -94,7 +94,7 @@ const HeroSection = () => {
                 data-cursor-hover
                 className="inline-block bg-primary text-primary-foreground px-12 py-5 text-xs sm:text-sm tracking-[0.35em] uppercase font-sans font-bold hover:bg-primary/80 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.6)]"
               >
-                Request a Suite
+                Start a Project
               </a>
             </MagneticButton>
           </motion.div>
@@ -108,7 +108,7 @@ const HeroSection = () => {
         transition={{ delay: 2.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
       >
-        <p className="text-primary/60 text-[10px] tracking-[0.4em] uppercase font-sans font-medium">Enter</p>
+        <p className="text-primary/60 text-[10px] tracking-[0.4em] uppercase font-sans font-medium">Scroll</p>
         <svg width="2" height="40" viewBox="0 0 2 40" className="overflow-visible">
           <motion.line
             x1="1" y1="0" x2="1" y2="40"

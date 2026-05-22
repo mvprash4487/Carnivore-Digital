@@ -25,14 +25,14 @@ const ContactSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-xs sm:text-sm tracking-[0.45em] uppercase text-primary font-sans font-semibold mb-6"
+            className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-6"
           >
-            05 — The View From Here
+            05 — Let's Move
           </motion.p>
 
           <div className="mb-6 leading-[0.92]">
             <SplitTextReveal
-              text="Let's Create"
+              text="The City"
               tag="h2"
               className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard block"
               delay={0}
@@ -45,10 +45,10 @@ const ContactSection = () => {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              Something
+              Never Sleeps.
             </motion.h2>
             <SplitTextReveal
-              text="Extraordinary"
+              text="Neither Do We."
               tag="h2"
               className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white text-shadow-hard block"
               delay={0.6}
@@ -61,9 +61,9 @@ const ContactSection = () => {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-primary font-sans text-xs sm:text-sm tracking-[0.25em] uppercase font-semibold mb-8"
+            className="text-primary font-sans text-xs sm:text-sm tracking-[0.2em] uppercase font-medium mb-8"
           >
-            The 19th floor awaits. Come up.
+            Drop us a line. We'll be on it before dawn.
           </motion.p>
 
           <motion.p
@@ -72,8 +72,7 @@ const ContactSection = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="text-white/70 font-sans text-base md:text-lg leading-relaxed mb-14 max-w-xl mx-auto"
           >
-            Ready to elevate your digital presence? We'd love to hear about your
-            project and explore how we can bring your vision to life.
+            Tell us about your brand. We'll tell you exactly how to take the competition apart.
           </motion.p>
 
           <motion.div
@@ -88,7 +87,7 @@ const ContactSection = () => {
                 data-cursor-hover
                 className="inline-block bg-primary text-primary-foreground px-14 py-6 text-xs sm:text-sm tracking-[0.35em] uppercase font-sans font-bold hover:bg-primary/80 transition-all duration-300 shadow-[0_4px_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
               >
-                <span className="relative z-10">Let's Connect</span>
+                <span className="relative z-10">Start the Hunt</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               </a>
             </MagneticButton>
