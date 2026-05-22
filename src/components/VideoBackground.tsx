@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const CDN = "https://cdn.jsdelivr.net/gh/mvprash4487/Carnivore-Digital@main/public/videos";
+const CDN = "https://raw.githubusercontent.com/mvprash4487/Carnivore-Digital/main/public/videos";
 
 const CHAPTERS = [
   { range: [0.00, 0.17] as [number, number], src: `${CDN}/01-descent.mp4`     },
