@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 const CDN = "https://raw.githubusercontent.com/mvprash4487/Carnivore-Digital/main/public/videos";
-const OG_IMAGE = "/og-preview.webp";
 
 const CHAPTERS: { type: "image" | "video"; range: [number, number]; src: string }[] = [
-  { type: "image", range: [0.00, 0.17], src: OG_IMAGE                   },
+  { type: "video", range: [0.00, 0.17], src: `${CDN}/01-descent.mp4`    },
   { type: "video", range: [0.17, 0.28], src: `${CDN}/02-street.mp4`     },
   { type: "video", range: [0.28, 0.42], src: `${CDN}/03-chinatown.mp4`  },
   { type: "video", range: [0.42, 0.65], src: `${CDN}/04-neon.mp4`       },
@@ -52,10 +51,7 @@ const VideoBackground = () => {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    // Only autoplay if the first chapter is a video
-    if (CHAPTERS[0].type === "video") {
-      videoRefs.current[0]?.play().catch(() => {});
-    }
+    videoRefs.current[0]?.play().catch(() => {});
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
