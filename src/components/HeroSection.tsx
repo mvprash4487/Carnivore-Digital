@@ -120,7 +120,7 @@ const HeroSection = () => {
           />
           <defs>
             <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(38 88% 54%)" />
+              <stop offset="0%" stopColor="hsl(185 100% 52%)" />
               <stop offset="100%" stopColor="transparent" />
             </linearGradient>
           </defs>

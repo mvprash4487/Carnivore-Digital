@@ -75,7 +75,7 @@ const ClientsSection = () => {
               <TiltCard3D maxTilt={6} className="rounded-lg">
                 <motion.div
                   className="group aspect-square flex items-center justify-center p-4 rounded-lg border border-border/40 bg-card/30 hover:border-primary/30 hover:bg-card/60 transition-all duration-500"
-                  whileHover={{ filter: "drop-shadow(0 0 12px hsl(38 88% 54% / 0.4))" }}
+                  whileHover={{ filter: "drop-shadow(0 0 16px hsl(185 100% 52% / 0.55))" }}
                 >
                   <img
                     src={client.logo}
