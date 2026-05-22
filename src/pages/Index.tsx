@@ -7,7 +7,7 @@ import ClientsSection from "@/components/ClientsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
-import VideoBackground from "@/components/VideoBackground";
+import HotelBackground from "@/components/HotelBackground";
 import CustomCursor from "@/components/motion/CustomCursor";
 import AmbientParticles from "@/components/motion/AmbientParticles";
 
@@ -17,7 +17,7 @@ const Index = () => {
       <CustomCursor />
       <AmbientParticles />
       <SmoothScroll>
-        <VideoBackground />
+        <HotelBackground />
         <div className="relative z-10 text-foreground min-h-screen">
           <Navigation />
           <HeroSection />
