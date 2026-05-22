@@ -39,14 +39,14 @@ const ContactSection = () => {
               staggerDelay={0.05}
               duration={0.8}
             />
-            <SplitTextReveal
-              text="Something"
-              tag="h2"
+            <motion.h2
               className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gold-gradient italic block"
-              delay={0.35}
-              staggerDelay={0.05}
-              duration={0.8}
-            />
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Something
+            </motion.h2>
             <SplitTextReveal
               text="Extraordinary"
               tag="h2"
