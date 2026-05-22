@@ -47,7 +47,7 @@ const VideoBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none bg-[#0A0506]">
+    <div className="fixed inset-0 z-0 pointer-events-none bg-[#080B14]">
       {CHAPTERS.map((ch, i) => (
         <video
           key={ch.src}
