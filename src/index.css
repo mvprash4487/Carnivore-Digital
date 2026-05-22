@@ -79,6 +79,18 @@
     background-image: linear-gradient(135deg, hsl(185 100% 65%), hsl(220 100% 65%), hsl(295 100% 65%));
   }
 
+  /* "Competition" hero word — solid neon magenta for full readability over video */
+  .text-competition-gradient {
+    color: hsl(308 100% 74%);
+    text-shadow: 0 0 24px hsla(308, 100%, 68%, 0.5), 0 2px 8px rgba(0,0,0,0.9);
+  }
+
+  /* "Never Sleeps" — solid neon cyan for maximum readability over dark video */
+  .text-neon-cyan {
+    color: hsl(185 100% 72%);
+    text-shadow: 0 0 20px hsla(185, 100%, 65%, 0.45), 0 2px 8px rgba(0,0,0,0.9);
+  }
+
   /* Multi-layer shadow with subtle neon glow — text readable over backgrounds */
   .text-shadow-hard {
     text-shadow:

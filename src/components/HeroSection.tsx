@@ -54,7 +54,7 @@ const HeroSection = () => {
             <div className="font-serif text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-black leading-[0.9] tracking-tight text-shadow-hard block mt-1">
               <span className="text-white">Your </span>
               <motion.span
-                className="text-gold-gradient italic"
+                className="text-competition-gradient italic"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
