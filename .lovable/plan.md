@@ -1,10 +1,12 @@
-I checked both the code and the live site. The tags are present and the image URL returns 200, so the issue is not a missing tag. The remaining likely problem is image compatibility: the current `social-preview.png` is 1200×598 with an alpha channel, while there is already a cleaner `og-preview.webp` asset at the standard 1200×630 size.
+The newly uploaded Open Graph image already lives at:
+`https://storage.googleapis.com/gpt-engineer-file-uploads/446EYhlKMxb85lRLQUHyQ6jVbOn2/social-images/social-1779513837820-social-preview.webp`
+
+Right now `index.html` is inconsistent: `og:image` and `twitter:image` point to that uploaded URL, but `og:image:secure_url` still points to the old `og-preview.webp?v=4`. Scrapers that read `secure_url` will fetch the wrong asset, which is likely why the preview still looks off.
 
 Plan:
-1. Update `index.html` so all social preview tags use `https://carnivoredigital.com/og-preview.webp?v=4` instead of `social-preview.png?v=3`.
-2. Set `og:image:type` to `image/webp`.
-3. Set `og:image:height` to `630` and keep width `1200`.
-4. Keep canonical and `og:url` on `https://carnivoredigital.com/`.
-5. After publishing, re-scrape `https://carnivoredigital.com/` so Facebook/LinkedIn/X discard the cached favicon preview.
+1. In `index.html`, set `og:image`, `og:image:secure_url`, and `twitter:image` all to the uploaded storage.googleapis.com URL.
+2. Keep `og:image:type=image/webp`, `og:image:width=1200`, `og:image:height=630`, and the alt text.
+3. Leave canonical and `og:url` on `https://carnivoredigital.com/`.
+4. After Publish → Update, re-scrape `https://carnivoredigital.com/` in the Facebook and LinkedIn debuggers to clear their caches.
 
-This is the most direct one-shot code fix because it removes the nonstandard PNG dimensions/alpha issue and gives scrapers a fresh image URL.
+That's the only code change needed to push the freshly uploaded image as the Open Graph image.
