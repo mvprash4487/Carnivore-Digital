@@ -43,14 +43,25 @@ const PortfolioSection = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12">
 
         <div ref={headRef} className="mb-16 md:mb-20">
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={headInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-5"
           >
-            03 — The Work
-          </motion.p>
+            <span className="font-serif text-[8rem] md:text-[12rem] font-black leading-none text-gold-gradient opacity-40 select-none block">
+              03
+            </span>
+            <motion.div
+              className="h-[2px] bg-primary mb-4"
+              initial={{ scaleX: 0 }}
+              animate={headInView ? { scaleX: 1 } : {}}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              style={{ originX: 0, width: 64 }}
+            />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-5">
+              The Work
+            </p>
+          </motion.div>
           <SplitTextReveal
             text="Campaigns That Landed"
             tag="h2"

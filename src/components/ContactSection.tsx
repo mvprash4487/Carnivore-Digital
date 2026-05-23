@@ -21,14 +21,25 @@ const ContactSection = () => {
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
-            className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-6"
           >
-            05 — Let's Move
-          </motion.p>
+            <span className="font-serif text-[8rem] md:text-[12rem] font-black leading-none text-gold-gradient opacity-40 select-none block">
+              05
+            </span>
+            <motion.div
+              className="h-[2px] bg-primary mb-4 mx-auto"
+              initial={{ scaleX: 0 }}
+              animate={inView ? { scaleX: 1 } : {}}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              style={{ originX: 0.5, width: 64 }}
+            />
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-primary font-sans font-medium mb-6">
+              Let's Move
+            </p>
+          </motion.div>
 
           <div className="mb-6 leading-[0.92]">
             <SplitTextReveal
