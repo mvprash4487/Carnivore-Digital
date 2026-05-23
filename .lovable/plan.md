@@ -1,22 +1,14 @@
-**Goal:** Get social platforms to pick up the new compressed `social-preview.png` instead of the cached favicon fallback.
+I checked both the project code and the live site. The OG image URL is being published correctly and the asset is reachable, but the code has one likely metadata problem:
 
-**Status:** Image is now 917 KB (well under the 5 MB limit). Meta tags already point to `https://www.carnivoredigital.com/social-preview.png`. The remaining problem is **crawler cache** — Facebook/LinkedIn/X cached the earlier failed fetch and will keep serving the favicon until busted.
+- `public/social-preview.png` is **1200×598**
+- `index.html` declares it as **1200×630** via `og:image:height`
 
-**Fix (one small code change):**
-1. In `index.html`, append a version query string to the image URL in both tags:
-   - `og:image` → `https://www.carnivoredigital.com/social-preview.png?v=2`
-   - `twitter:image` → same
+Some social scrapers are strict about image dimensions and can reject the image when the declared size does not match the actual file, falling back to the favicon.
 
-   The `?v=2` forces crawlers to treat it as a new asset. No file rename needed.
-
-**File changed:** `index.html` — 2 lines.
-
-**After implementing, you must do these manually (I can't do them for you):**
-1. **Click Publish → Update** in Lovable. The `index.html` change only goes live at carnivoredigital.com after publishing.
-2. **Re-scrape each platform** so they refetch:
-   - Facebook / Instagram: https://developers.facebook.com/tools/debug/ → paste your URL → **Scrape Again**
-   - LinkedIn: https://www.linkedin.com/post-inspector/ → paste URL → **Inspect**
-   - X / Twitter: post a test tweet with the URL (X has no manual debugger anymore)
-3. Verify the new image appears in the preview on each platform.
-
-If after re-scraping you still see the favicon, the most likely cause is the publish step was skipped — check that `view-source:https://www.carnivoredigital.com/` shows the `?v=2` URL.
+Plan:
+1. Update `index.html` so the metadata matches the real image:
+   - `og:image:height` from `630` to `598`
+   - add `og:image:secure_url` pointing to the same HTTPS image URL
+   - add `og:image:type` as `image/png`
+2. Keep the existing cache-busting `?v=2` URL unless you want me to bump it to `?v=3` for another forced re-scrape.
+3. After implementation, publish the site and re-scrape Facebook/LinkedIn so they fetch the corrected metadata.
