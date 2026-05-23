@@ -1,14 +1,10 @@
-I found the likely missing piece: the current `og:image` points at `https://www.carnivoredigital.com/...`, but that URL 302 redirects to the primary non-www domain. Some social scrapers are picky and may reject redirected Open Graph images, then fall back to the favicon.
+I checked both the code and the live site. The tags are present and the image URL returns 200, so the issue is not a missing tag. The remaining likely problem is image compatibility: the current `social-preview.png` is 1200×598 with an alpha channel, while there is already a cleaner `og-preview.webp` asset at the standard 1200×630 size.
 
 Plan:
-1. Update `index.html` to use the primary domain directly for scraper metadata:
-   - `og:url` → `https://carnivoredigital.com/`
-   - canonical → `https://carnivoredigital.com/`
-   - `og:image`, `og:image:secure_url`, `twitter:image` → `https://carnivoredigital.com/social-preview.png?v=3`
-2. Keep the validated image dimensions/type:
-   - width `1200`
-   - height `598`
-   - type `image/png`
-3. Bump cache busting from `?v=2` to `?v=3` so LinkedIn/Facebook/X fetch a fresh image URL after publishing.
+1. Update `index.html` so all social preview tags use `https://carnivoredigital.com/og-preview.webp?v=4` instead of `social-preview.png?v=3`.
+2. Set `og:image:type` to `image/webp`.
+3. Set `og:image:height` to `630` and keep width `1200`.
+4. Keep canonical and `og:url` on `https://carnivoredigital.com/`.
+5. After publishing, re-scrape `https://carnivoredigital.com/` so Facebook/LinkedIn/X discard the cached favicon preview.
 
-After this, publish the update and re-scrape the exact URL `https://carnivoredigital.com/`, not the `www` version.
+This is the most direct one-shot code fix because it removes the nonstandard PNG dimensions/alpha issue and gives scrapers a fresh image URL.
